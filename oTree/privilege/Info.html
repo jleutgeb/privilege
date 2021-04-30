@@ -1,0 +1,400 @@
+{{ block title }}
+    Information
+{{ endblock }}
+{{ block content }}
+
+
+
+<div id="information-overview" style="margin-left:10px; margin-bottom:10px">
+
+<table class="table">
+    <tr style="border-top:1px solid black">
+        <th class="text-center"></th>
+        <th class="text-center">You</th>
+        <th class="text-center">Your Partner</th>
+    </tr>
+    <tr>
+        <td class="text-center">Balls</td>
+        <td class="text-center">
+            <svg width="91" height="40">
+          <circle cx="20" cy="20" r="19" fill="lightgray" stroke="black"/>
+          <text x="16" y="25">?</text>
+
+          <circle cx="70" cy="20" r="19" fill="lightgray" stroke="black"/>
+          <text x="66" y="25" fill="black">?</text>
+            </svg>
+        </td>
+        <td class="text-center">
+            <svg width="91" height="40">
+          <circle cx="20" cy="20" r="19" fill="lightgray" stroke="black"/>
+          <text x="16" y="25">?</text>
+
+          <circle cx="70" cy="20" r="19" fill="lightgray" stroke="black"/>
+          <text x="66" y="25" fill="black">?</text>
+            </svg>
+
+        </td>
+    </tr>
+    <tr>
+        <td class="text-center">Card</td>
+        <td class="text-center">
+            <svg width="30" height="40">
+                {{ if player.high_signal }}
+                <rect width="30" height="40" fill="blue" stroke="black" />
+               {{ else }}
+               <rect width="30" height="40" fill="red" stroke="black" />
+                {{ endif }}
+            </svg>
+
+        </td>
+        <td class="text-center">
+            <svg width="30" height="40">
+           <rect width="30" height="40" fill="lightgray" stroke="black" />
+           <text x="11" y="25" fill="black">?</text>
+            </svg>
+
+        </td>
+    </tr>
+    <tr style="border-bottom:1px solid black">
+        <td class="text-center">Star</td>
+        <td class="text-center">
+            <svg height="40" width="40">
+                {{ if player.kudos }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="yellow"/>
+                {{ else }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
+                {{ endif }}
+            </svg>
+
+        </td>
+        <td class="text-center">
+            {{ if public }}
+            <svg height="40" width="40">
+                {{ if partner_kudos }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="yellow"/>
+                {{ else }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
+                {{ endif }}
+            </svg>
+
+            {{ else }}
+            <svg height="40" width="40">
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="lightgray"/>
+                <text x=16 y=25>?</text>
+            </svg>
+            {{ endif }}
+
+        </td>
+    </tr>
+</table>
+</div>
+
+<div style="margin-right:10px; margin-top:10px">
+
+<p>
+    You receive {{ if player.high_signal }}a blue card{{ else }}a red card{{ endif }}.
+    The probability that the card's color matches the ball's color that was drawn from Urn 1 is {{ prob_correct_signal }}%.
+</p>
+
+<p>
+    You {{ if player.kudos }}receive a yellow star{{ else }}do not receive a yellow star{{ endif }}.
+    {{ if public }}Your partner {{ if partner_kudos }}receives a yellow star{{ else }}does not receive a yellow star{{ endif }}.{{ endif }}
+    To receive a star you must choose a winning door and the ball that was drawn from Urn 2 must be white.
+</p>
+
+    <p>Please evaluate how likely the following statements are. To maximize the probability of earning the prize you should simply guess how likely each statement is true on average.</p>
+
+</div>
+
+<div style="margin:10px">
+
+    <table id="beliefs-choices" class="table">
+    <tr style="border-top:2px solid black">
+        <td></td>
+        <td></td>
+        <td colspan="2" style="border-bottom:1px solid black">Your chance of winning {{ Constants.beliefs_payoff }} </td>
+    </tr>
+
+    <tr style="border-bottom:1px solid black">
+        <td>Statement</td>
+        <td>Your guess</td>
+        <td>if the statement is true</td>
+        <td>if the statement is not true</td>
+    </tr>
+
+
+
+    <tr>
+        <td style="width: 450px">
+            <label for="beliefs_high_ability">We drew a blue ball for you from Urn 1.</label>
+            <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
+                <span class="input-group-text">0%</span>
+                <input type="range" name="beliefs_high_ability" id="beliefs_high_ability" min="0" max="1" step="0.01" class="slider">
+                <span class="input-group-text">100%</span>
+            </div>
+        </td>
+
+        <td>
+            <span id="beliefs_high_ability_guess"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_high_ability_typeH"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_high_ability_typeL"></span>
+        </td>
+    </tr>
+
+
+    <tr>
+        <td style="width: 450px">
+            <label for="beliefs_privileged">We drew a white ball for you from Urn 2.</label>
+            <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
+                <span class="input-group-text">0%</span>
+                <input type="range" name="beliefs_privileged" id="beliefs_privileged" min="0" max="1" step="0.01" class="slider">
+                <span class="input-group-text">100%</span>
+            </div>
+        </td>
+
+        <td>
+            <span id="beliefs_privileged_guess"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_privileged_typeH"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_privileged_typeL"></span>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width: 450px">
+            <label for="beliefs_partner_high_ability">We drew a blue ball for your partner from Urn 1.</label>
+            <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
+                <span class="input-group-text">0%</span>
+                <input type="range" name="beliefs_partner_high_ability" id="beliefs_partner_high_ability" min="0" max="1" step="0.01" class="slider">
+                <span class="input-group-text">100%</span>
+            </div>
+        </td>
+
+        <td>
+            <span id="beliefs_partner_high_ability_guess"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_partner_high_ability_typeH"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_partner_high_ability_typeL"></span>
+        </td>
+    </tr>
+
+    <tr style="border-bottom:2px solid black">
+        <td style="width: 450px">
+            <label for="beliefs_partner_privileged">We drew a white ball for your partner from Urn 2.</label>
+            <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
+                <span class="input-group-text">0%</span>
+                <input type="range" name="beliefs_partner_privileged" id="beliefs_partner_privileged" min="0" max="1" step="0.01" class="slider">
+                <span class="input-group-text">100%</span>
+            </div>
+        </td>
+        <td>
+            <span id="beliefs_partner_privileged_guess"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_partner_privileged_typeH"></span>
+        </td>
+
+        <td>
+            <span id="beliefs_partner_privileged_typeL"></span>
+        </td>
+
+    </tr>
+
+</table>
+
+</div>
+
+
+<div>
+    <button id="next_button" class="btn btn-primary btn-large" style="visibility: hidden">Next</button>
+</div>
+
+
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    .slider {
+        -webkit-appearance: none;
+        --SliderWidth: 0px;
+        margin: 0 0;
+    }
+
+    .slider:focus {
+        outline: none;
+    }
+
+    .slider::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        animate: 0.2s;
+        box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
+        background: lightgray;
+        border-radius: 0;
+        border: 0 solid #000101;
+    }
+
+    .slider::-webkit-slider-thumb {
+        box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
+        border: 0 solid #000000;
+        height: 100%;
+        width: var(--SliderWidth);
+        border-radius: 0;
+        background: black;
+        cursor: pointer;
+        -webkit-appearance: none;
+        margin-top: 0px;
+    }
+
+    .slider:focus::-webkit-slider-runnable-track {
+        background: lightgray;
+    }
+
+    .slider::-moz-range-track {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        animate: 0.2s;
+        box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
+        background: lightgray;
+        border-radius: 0;
+        border: 0 solid #000101;
+    }
+
+    .slider::-moz-range-thumb {
+        box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
+        border: 0 solid #000000;
+        height: 100%;
+        width: var(--SliderWidth);
+        border-radius: 0;
+        background: black;
+        cursor: pointer;
+    }
+
+    .slider::-ms-track {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        animate: 0.2s;
+        background: lightgray;
+        border-color: transparent;
+        border-width: 39px 0;
+        color: transparent;
+    }
+
+    .slider::-ms-fill-lower {
+        background: lightgray;
+        border: 0 solid #000101;
+        border-radius: 0;
+        box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
+    }
+
+    .slider::-ms-fill-upper {
+        background: lightgray;
+        border: 0 solid #000101;
+        border-radius: 0;
+        box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
+    }
+
+    .slider::-ms-thumb {
+        box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
+        border: 0 solid #000000;
+        height: 100%;
+        width: var(--SliderWidth);
+        border-radius: 0;
+        background: black;
+        cursor: pointer;
+    }
+
+    .slider:focus::-ms-fill-lower {
+        background: lightgray;
+    }
+
+    .slider:focus::-ms-fill-upper {
+        background:lightgray;
+    }
+
+body {
+    padding: 30px;
+}
+</style>
+
+<style>
+td
+{
+    padding: 5px 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+</style>
+
+<style>
+    #information-overview {
+    width: 300px;
+    float: right;
+}
+</style>
+
+
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    const sliders = document.querySelectorAll('.slider')
+    const next_button = document.getElementById("next_button")
+
+    window.onload = function() {
+        let i
+        for (i = 0; i < sliders.length; i++) {
+            sliders[i].ID = i;
+            sliders[i].addEventListener('input', slider_click);
+            sliders[i].addEventListener('change', slider_click);
+            sliders[i].clicked = 0;
+        }
+    }
+
+    function slider_click() {
+        this.style.setProperty('--SliderWidth', '10px')
+        this.clicked = 1
+        let num_clicked = 0
+        let i
+        for (i = 0; i < sliders.length; i++) {
+            num_clicked += sliders[i].clicked
+        }
+        if (num_clicked === 4) {
+            next_button.style.visibility = "visible"
+        }
+
+        let guess = (this.value * 100).toFixed(0);
+
+        let chanceH = ((1 - Math.pow((1 - this.value), 2)) * 100).toFixed(2);
+        let chanceL = ((1 - Math.pow(this.value, 2)) * 100).toFixed(2);
+
+        document.getElementById(this.id.concat("_guess")).innerHTML = guess.concat("%")
+        document.getElementById(this.id.concat("_typeH")).innerHTML = chanceH.concat("%")
+        document.getElementById(this.id.concat("_typeL")).innerHTML = chanceL.concat("%")
+
+    }
+
+</script>
+{{ endblock }}
+

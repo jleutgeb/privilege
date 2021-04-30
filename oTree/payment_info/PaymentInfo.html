@@ -1,0 +1,15 @@
+{{ block title }}
+    Payment Information
+{{ endblock }}
+{{ block content }}
+
+<div class="panel panel-default" style="margin-bottom:10px">
+    <div class="panel-body">
+        <p>Today you earned {{ participant.payoff }}.
+            We will transfer your earnings via Paypal to the following email address: {{ player.participant.label }}.
+            Please contact the administrators if this email address is not correct.
+        </p>
+    </div>
+</div>
+
+{{ endblock }}

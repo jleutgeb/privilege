@@ -1,0 +1,157 @@
+{{ block title }}
+    Feedback
+{{ endblock }}
+{{ block content }}
+
+
+<div id="information-overview" style="margin-left:10px; margin-bottom:10px">
+
+<table class="table">
+    <tr style="border-top:1px solid black">
+        <th class="text-center"></th>
+        <th class="text-center">You</th>
+        <th class="text-center">Your Partner</th>
+    </tr>
+    <tr>
+        <td class="text-center">Balls</td>
+        <td class="text-center">
+            <svg width="91" height="40">
+                {{ if player.high_ability }}
+                <circle cx="20" cy="20" r="19" fill="blue" stroke="black"/>
+                {{ else }}
+                <circle cx="20" cy="20" r="19" fill="red" stroke="black"/>
+                {{ endif }}
+                {{ if player.privileged }}
+                <circle cx="70" cy="20" r="19" fill="white" stroke="black"/>
+                {{ else }}
+                <circle cx="70" cy="20" r="19" fill="black" stroke="black"/>
+                {{ endif }}
+            </svg>
+        </td>
+        <td class="text-center">
+            <svg width="91" height="40">
+                {{ if partner_high_ability }}
+                <circle cx="20" cy="20" r="19" fill="blue" stroke="black"/>
+                {{ else }}
+                <circle cx="20" cy="20" r="19" fill="red" stroke="black"/>
+                {{ endif }}
+                {{ if partner_privileged }}
+                <circle cx="70" cy="20" r="19" fill="white" stroke="black"/>
+                {{ else }}
+                <circle cx="70" cy="20" r="19" fill="black" stroke="black"/>
+                {{ endif }}
+            </svg>
+
+        </td>
+    </tr>
+    <tr>
+        <td class="text-center">Card</td>
+        <td class="text-center">
+            <svg width="30" height="40">
+                {{ if player.high_signal }}
+                <rect width="30" height="40" fill="blue" stroke="black" />
+               {{ else }}
+               <rect width="30" height="40" fill="red" stroke="black" />
+                {{ endif }}
+            </svg>
+
+        </td>
+        <td class="text-center">
+            <svg width="30" height="40">
+           <rect width="30" height="40" fill="lightgray" stroke="black" />
+           <text x="11" y="25" fill="black">?</text>
+            </svg>
+
+        </td>
+    </tr>
+    <tr style="border-bottom:1px solid black">
+        <td class="text-center">Star</td>
+        <td class="text-center">
+            <svg height="40" width="40">
+                {{ if player.kudos }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="yellow"/>
+                {{ else }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
+                {{ endif }}
+            </svg>
+
+        </td>
+        <td class="text-center">
+            {{ if public }}
+            <svg height="40" width="40">
+                {{ if partner_kudos }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="yellow"/>
+                {{ else }}
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
+                {{ endif }}
+            </svg>
+
+            {{ else }}
+            <svg height="40" width="40">
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
+                <text x=16 y=25>?</text>
+            </svg>
+            {{ endif }}
+
+        </td>
+    </tr>
+</table>
+</div>
+
+<div style="margin-right:10px; margin-top:10px">
+
+{{ if player.payment_choices }}
+
+<p>You are paid for your door choices.</p>
+<p>In the first decision you chose a {{ if player.correct }}winning{{ else }}losing{{ endif }} door.
+    In the second decision you {{ if player.makes_leadership_choice }}chose from your own doors{{ else }}chose the same door as your partner{{ endif }} and
+    {{ if player.makes_leadership_choice }}you{{ else }}your partner{{ endif }} chose a
+    {{ if player.leadership_correct }}winning{{ else }}losing{{ endif }} door.</p>
+<p>For every winning door you receive {{ Constants.choice_payoff }} and earn {{ player.payoff }}.</p>
+
+{{ else }}
+
+<p>You are paid for your guesses.</p>
+<p>You stated a belief of {{ beliefs_high_ability }} that the ball drawn for you from Urn 1 is blue.
+    We drew {{ if player.high_ability }}a blue ball{{ else }}a red ball{{ endif }} for you.
+    Your chance of receiving the prize was {{ chance_high_ability }}.
+    You {{ if player.outcome_beliefs_high_ability }}received{{ else }}did not receive{{ endif }} the prize.
+</p>
+
+<p>You stated a belief of {{ beliefs_privileged }} that the ball drawn for you from Urn 2 is white.
+    We drew {{ if player.privileged }}a white ball{{ else }}a black ball{{ endif }}.
+    Your chance of receiving the prize was {{ chance_privileged }}.
+    You {{ if player.outcome_beliefs_privileged }}received{{ else }}did not receive{{ endif }} the prize.
+</p>
+
+<p>You stated a belief of {{ beliefs_partner_high_ability }} that the ball drawn for your partner from Urn 1 is blue.
+    We drew {{ if partner_high_ability }}a white ball{{ else }}a black ball{{ endif }}.
+    Your chance of receiving the prize was {{ chance_partner_high_ability }}.
+    You {{ if player.outcome_beliefs_partner_high_ability }}received{{ else }}did not receive{{ endif }} the prize.
+</p>
+
+<p>You stated a belief of {{ beliefs_partner_high_ability }} that the ball drawn for your partner from Urn 2 is white.
+    We drew {{ if partner_privileged }}a white ball{{ else }}a black ball{{ endif }}.
+    Your chance of receiving the prize was {{ chance_partner_high_ability }}.
+    You {{ if player.outcome_beliefs_partner_privileged }}received{{ else }}did not receive{{ endif }} the prize.
+</p>
+
+    <p>For every prize you receive {{ Constants.beliefs_payoff }} and earn {{ player.payoff }}.</p>
+
+
+{{ endif }}
+
+</div>
+
+    {{ next_button }}
+
+{{ endblock }}
+
+{{ block styles }}
+<style>
+    #information-overview {
+    width: 300px;
+    float: right;
+}
+</style>
+{{ endblock }}
