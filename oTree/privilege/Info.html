@@ -60,7 +60,7 @@
         <td class="text-center">
             <svg height="40" width="40">
                 {{ if player.kudos }}
-                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="yellow"/>
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="orange"/>
                 {{ else }}
                 <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
                 {{ endif }}
@@ -71,7 +71,7 @@
             {{ if public }}
             <svg height="40" width="40">
                 {{ if partner_kudos }}
-                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="yellow"/>
+                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="orange"/>
                 {{ else }}
                 <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
                 {{ endif }}
@@ -97,8 +97,8 @@
 </p>
 
 <p>
-    You {{ if player.kudos }}receive a yellow star{{ else }}do not receive a yellow star{{ endif }}.
-    {{ if public }}Your partner {{ if partner_kudos }}receives a yellow star{{ else }}does not receive a yellow star{{ endif }}.{{ endif }}
+    You {{ if player.kudos }}receive an orange star{{ else }}do not receive an orange star{{ endif }}.
+    {{ if public }}Your partner {{ if partner_kudos }}receives an orange star{{ else }}does not receive an orange star{{ endif }}.{{ endif }}
     To receive a star you must choose a winning door and the ball that was drawn from Urn 2 must be white.
 </p>
 
