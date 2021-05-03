@@ -35,7 +35,7 @@ class Player(BasePlayer):
     field = models.LongStringField(label="Which field of study?")
     semesters = models.IntegerField(min=0, max=100, label="How many semesters have you been studying?")
     strategy = models.LongStringField(blank=True,
-                                      label="Please describe your though process or your strategy in this experiment.")
+                                      label="Please describe your thought process or your strategy in this experiment.")
     comments = models.LongStringField(blank=True,
                                       label="Do you have any other comments or questions about this experiment?")
 
