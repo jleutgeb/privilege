@@ -109,7 +109,13 @@
         <li>If the ball drawn from Urn 1 is red, {{ Constants.number_of_correct_choices_low }} of the doors are winning doors.</li>
     </ul>
 </div>
-    {{ formfields }}
+
+    {{ form.leadership_choice.label }} <br>
+    <br> {{ for choice in form.leadership_choice }}
+        {{ choice }} <img src="https://us.123rf.com/450wm/leysan/leysan1001/leysan100100003/6203572-ilustraci%C3%B3n-de-dibujos-animados-de-una-puerta-de-madera-.jpg?ver=6" width="70px" />
+    {{ endfor }}
+    <br>
+<br>
 
     {{ next_button }}
 

@@ -83,7 +83,12 @@
 
 </div>
 
-    {{ formfields }}
+    {{ form.choice.label }} <br>
+    <br> {{ for choice in form.choice }}
+        {{ choice }} <img src="https://us.123rf.com/450wm/leysan/leysan1001/leysan100100003/6203572-ilustraci%C3%B3n-de-dibujos-animados-de-una-puerta-de-madera-.jpg?ver=6" width="70px" />
+    {{ endfor }}
+    <br>
+<br>
 
     {{ next_button }}
 
