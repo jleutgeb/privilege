@@ -22,6 +22,15 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
+    name = models.stringField(
+        label="Please enter your name as it appears on your bank account"
+    )
+    IBAN = models.stringField(
+        label="Please enter your IBAN"
+    )
+    BIC = models.stringField(
+        label="Please enter your BIC"
+    )
     subject_email = models.StringField(
         label="Please enter your Email address"
     )
@@ -30,7 +39,7 @@ class Player(BasePlayer):
 # PAGES
 class MyPage(Page):
     form_model = 'player'
-    form_fields = ['subject_email']
+    form_fields = ['name', 'IBAN', 'BIC', 'subject_email']
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):

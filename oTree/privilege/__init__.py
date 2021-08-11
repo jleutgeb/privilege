@@ -18,24 +18,16 @@ class Constants(BaseConstants):
     # the game is played only once, no repeats
     num_rounds = 1
 
-    # the number of choices that the subject may choose from
-    number_of_choices = 3
+    # probability of being privileged P, else underprivileged U
+    p = 0.25
 
-    # how many are correct when they are type H and L
-    number_of_correct_choices_high = 2
-    number_of_correct_choices_low = 1
+    # probability of being high ability when P/U
+    phi_P = 0.2
+    phi_U = 0.8
 
-    # probability of being type H.
-    # please only use X/10 because probabilities are explained to subjects by draws from an urn with 10 balls
-    prob_high_ability = 0.7
-
-    # probability of being privileged P
-    # please only use X/10 because probabilities are explained to subjects by draws from an urn with 10 balls
-    prob_privileged = 0.7
-
-    # probability of receiving a correct signal
-    # please only use X/10 because probabilities are explained to subjects by draws from an pile with 10 cards
-    prob_correct_signal = 0.7
+    # probability of hitting the target when high and low ability type
+    q_H = 0.75
+    q_L = 0.25
 
     # payoffs for [correct choice, incorrect choice]
     choice_payoff = cu(5)
@@ -47,91 +39,60 @@ class Subsession(BaseSubsession):
 
 
 class Group(BaseGroup):
-    pass
+    correct = models.BooleanField()  # does the leader hit the target
 
 
 class Player(BasePlayer):
-    # variable recording subject's choice
-    choice = models.IntegerField(
-        choices=[
-            [0, "Door 1"],
-            [1, "Door 2"],
-            [2, "Door 3"],
-        ],
-        label="Which door do you pick?",
-        widget=widgets.RadioSelect
-    )
+    high = models.BooleanField()  # H type or not (L)
+    privileged = models.BooleanField()  # P type or not (U)
+    ability = models.FloatField()  # player's probability of hitting the target
+    correct = models.BooleanField()  # was the player correct
+    kudos = models.BooleanField()  # does the player receive kudos
 
-    # was the player correct
-    correct = models.BooleanField()
+    # beliefs about own and partner's types conditional on receiving signal kudos or not
+    bi_k = models.FloatField(min=0, max=1)
+    bi_n = models.FloatField(min=0, max=1)
+    bj_k = models.FloatField(min=0, max=1)
+    bj_n = models.FloatField(min=0, max=1)
 
-    # is the player type H
-    high_ability = models.BooleanField()
+    obi = models.BooleanField()  # does the player receive prize for beliefs about self
+    obj = models.BooleanField()  # does the player receive prize for beliefs about partner
 
-    # is the player privileged P
-    privileged = models.BooleanField()
-
-    # does the player receive signal h
-    high_signal = models.BooleanField()
-
-    # does the player receive kudos k
-    kudos = models.BooleanField()
-
-    # does the player's partner receive kudos
-    partner_kudos = models.BooleanField()
-
-    # save beliefs about own and partner's types
-    beliefs_high_ability = models.FloatField(min=0, max=1)
-    beliefs_privileged = models.FloatField(min=0, max=1)
-    beliefs_partner_high_ability = models.FloatField(min=0, max=1)
-    beliefs_partner_privileged = models.FloatField(min=0, max=1)
-
-    # save random draws for debug purposes
-    draw_ability = models.FloatField()
-    draw_privilege = models.FloatField()
-    draw_signal = models.FloatField()
-    draw_correct = models.StringField()
-
-    draw_beliefs_ability = models.FloatField()
-    draw_beliefs_privilege = models.FloatField()
-    draw_beliefs_partner_ability = models.FloatField()
-    draw_beliefs_partner_privilege = models.FloatField()
-
-    # save whether the subject wants to lead/follow
-    leads = models.BooleanField(
+    # save whether the subject wants to lead/follow when signals are xy (x for own y for other)
+    wants_leader = models.BooleanField()  # used to record actual outcome
+    wants_leader_kk = models.BooleanField(
         choices=[
             [True, "Yes"],
             [False, "No"],
         ],
-        label="Do you want to choose from your own doors?",
+        label="Do you want to lead?",
     )
-    follows = models.BooleanField(
+    wants_leader_kn = models.BooleanField(
         choices=[
             [True, "Yes"],
             [False, "No"],
         ],
-        label="Do you want to choose the same door as your partner?",
+        label="Do you want to lead?",
+    )
+    wants_leader_nk = models.BooleanField(
+        choices=[
+            [True, "Yes"],
+            [False, "No"],
+        ],
+        label="Do you want to lead?",
+    )
+    wants_leader_nn = models.BooleanField(
+        choices=[
+            [True, "Yes"],
+            [False, "No"],
+        ],
+        label="Do you want to lead?",
     )
 
-    # track whether the subject may make a choice in the leadership part of the game
-    makes_leadership_choice = models.BooleanField()
+    # track whether the subject makes the choice in the leadership part of the game
+    is_leader = models.BooleanField()
 
-    # save what choice is made in the leadership part of the game and whether the choice is correct
-    leadership_choice = models.BooleanField(choices=[
-        [0, "Door 1"],
-        [1, "Door 2"],
-        [2, "Door 3"],
-    ], label="Which door do you pick?")
-    leadership_draw_correct = models.StringField()
-    leadership_correct = models.BooleanField()
-
-    # save whether player receives prize for beliefs from binarized scoring rule
-    outcome_beliefs_high_ability = models.BooleanField()
-    outcome_beliefs_privileged = models.BooleanField()
-    outcome_beliefs_partner_high_ability = models.BooleanField()
-    outcome_beliefs_partner_privileged = models.BooleanField()
-
-    # variable if player is paid for choices or beliefs (to eliminate hedging)
+    # variable if player is paid for beliefs (to eliminate hedging)
     payment_choices = models.BooleanField()
 
 
@@ -139,30 +100,27 @@ class Player(BasePlayer):
 def creating_session(subsession):
     # loop through all players in the session
     for player in subsession.get_players():
-        # draw from U~[0,1] and assign ability
-        player.draw_ability = random.random()
-        player.high_ability = False
-        if player.draw_ability < Constants.prob_high_ability:
-            player.high_ability = True
-
-        # same for privilege
-        player.draw_privilege = random.random()
-        player.privileged = False
-        if player.draw_privilege < Constants.prob_privileged:
+        # draw from U~[0,1] and assign privilege
+        if player.draw_privilege < Constants.p:
             player.privileged = True
+        else:
+            player.privileged = False
 
-        # return a high signal to players if they are of high ability and pass their signal check
-        player.high_signal = False
-        player.draw_signal = random.random()
-        if player.high_ability and player.draw_signal < Constants.prob_correct_signal:
-            player.high_signal = True
+        # draw from U~[0,1] and assign ability type
+        if player.privileged and random.random() < Constants.phi_P:
+            player.high = True
+        elif not player.privileged and random.random() < Constants.phi_U:
+            player.high = True
+        else:
+            player.high = False
 
-        # or if they are low ability and do not pass their signal check
-        if not player.high_signal and player.draw_signal > Constants.prob_correct_signal:
-            player.high_signal = True
+        if player.high:
+            player.ability = Constants.q_H
+        else:
+            player.ability = Constants.q_L
 
-        # assign payment for choices or beliefs (50/50 chance)
-        player.payment_choices = random.random() > 0.5
+        # assign payment for beliefs (50/50 chance)
+        player.payment_choices = random.random() < 0.5
 
 
 # FUNCTIONS
@@ -186,203 +144,81 @@ class Instructions(Page):
     # on the instruction page, push some variables to the page: How many winning balls are in each urn, etc.
     @staticmethod
     def vars_for_template(player: Player):
-        return dict(
-            high_ability_prob=round(Constants.prob_high_ability * 100),
-            high_ability_balls=round(Constants.prob_high_ability * 10),
-            low_ability_balls=10-round(Constants.prob_high_ability * 10),
-
-            privileged_prob=round(Constants.prob_privileged * 100),
-            privileged_balls=round(Constants.prob_privileged * 10),
-            nonprivileged_balls=10-round(Constants.prob_privileged * 10),
-
-            pile_correct_prob=round(Constants.prob_correct_signal * 100),
-            pile_correct_cards=round(Constants.prob_correct_signal * 10),
-            pile_incorrect_cards=10-round(Constants.prob_correct_signal * 10),
-
-            follower_choice=player.session.config["follower_choice"],
-            public=player.session.config["public"],
-        )
+        return dict()
 
 
 class Decision1(Page):
-    # the player can make a choice for their variable choice here
-    form_model = "player"
-    form_fields = ["choice"]
-
     # after the player clicks next, run the following code
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        # determine the number of correct choices
-        number_of_correct_choices = Constants.number_of_correct_choices_low
-        if player.high_ability:
-            number_of_correct_choices = Constants.number_of_correct_choices_high
-
-        # initialize variable if player is correct as False
-        player.correct = False
-
-        # randomly draw some choices that are correct and save it in the participant variables for later use
-        draw_correct = random.sample(range(Constants.number_of_choices), number_of_correct_choices)
-        player.participant.draw_correct = draw_correct
-
-        # join them into a single string and save the correct choices (for debug purposes)
-        draw_correct_string = [str(element) for element in draw_correct]
-        draw_correct_single_string = ",".join(draw_correct_string)
-        player.draw_correct = draw_correct_single_string
-
-        # check if player's choice is in correct draw
-        if player.choice in draw_correct:
+        # determine whether the player hit the target
+        if random.random() < player.ability:
             player.correct = True
+        else:
+            player.correct = False
 
         # give player kudos if they are privileged and their choice was correct
-        player.kudos = False
-        if player.privileged and player.choice:
+        if player.privileged and player.correct:
             player.kudos = True
+        else:
+            player.kudos = False
 
 
-# wait for other player in group to make a choice too
-class InfoWaitPage(WaitPage):
-    pass
-
-
-class Info(Page):
+class Beliefs(Page):
     # on this page the player reports their beliefs
     form_model = "player"
-    form_fields = ["beliefs_high_ability", "beliefs_privileged", "beliefs_partner_high_ability",
-                   "beliefs_partner_privileged"]
-
-    # push some variables to the html page
-    @staticmethod
-    def vars_for_template(player: Player):
-        # initialize partner's kudos as an empty value: if we are not in public treatment, we do not want to push any
-        # information to the page
-        partner_kudos = []
-        if player.session.config["public"]:
-            partner_kudos = player.get_others_in_group()[0].kudos
-        return dict(
-            public=player.session.config["public"],
-            partner_kudos=partner_kudos,
-            prob_correct_signal=round(Constants.prob_correct_signal*100)
-            )
+    form_fields = ["bi_k", "bi_n", "bj_k", "bj_n"]
 
 
-class FirstMover(Page):
+class Leadership(Page):
+    # players say whether they want to lead
     form_model = "player"
-    form_fields = ["leads"]
+    form_fields = ["wants_leader_kk", "wants_leader_kn", "wants_leader_nk", "wants_leader_nn"]
 
-    # only player with ID = 1 in group gets to make a choice
-    @staticmethod
-    def is_displayed(player: Player):
-        return player.id_in_group == 1
 
+# wait for all players to make a choice whether to lead
+class LeadershipWaitPage(WaitPage):
     @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        # if player 1 leads, also set their makes_choice to True
-        # set player 2's makes_choice to False (if we are in the follower treatment, player 2 may revise later)
-        if player.leads:
-            player.makes_leadership_choice = True
-            player.get_others_in_group()[0].makes_leadership_choice = False
-        # if player 2 does not lead, other way round
+    def after_all_players_arrive(group: Group):
+        players = group.get_players()
+        for p in players:
+            partner = p.get_others_in_group()[0]
+            if p.kudos and partner.kudos:
+                p.wants_leader = p.wants_leader_kk
+            elif p.kudos and not partner.kudos:
+                p.wants_leader = p.wants_leader_kn
+            elif not p.kudos and partner.kudos:
+                p.wants_leader = p.wants_leader_nk
+            else:
+                p.wants_leader = p.wants_leader_nn
+
+        # get both players' decisions. if they are not the same there is only one volunteer. else throw a coin.
+        choices = [p.wants_leader for p in players]
+        if choices[0] != choices[1]:
+            for p in players:
+                p.is_leader = p.leads
         else:
-            player.makes_leadership_choice = False
-            player.get_others_in_group()[0].makes_leadership_choice = True
-
-    # push some variables to the html page
-    @staticmethod
-    def vars_for_template(player: Player):
-        # initialize partner's kudos as an empty value: if we are not in public treatment, we do not want to push any
-        # information to the page
-        partner_kudos = []
-        if player.session.config["public"]:
-            partner_kudos = player.get_others_in_group()[0].kudos
-        return dict(
-            public=player.session.config["public"],
-            partner_kudos=partner_kudos,
-            follower_choice=player.session.config["follower_choice"],
-            )
-
-
-# wait for player 1 to make a choice whether to lead
-class FirstMoverWaitPage(WaitPage):
-    pass
-
-
-class SecondMover(Page):
-    form_model = "player"
-    form_fields = ["follows"]
-
-    # only player 2 in group gets to see this page
-    # only if we are in the follower_choice treatment and player 1 chose to lead though
-    @staticmethod
-    def is_displayed(player: Player):
-        return player.id_in_group == 2 and player.session.config["follower_choice"] and \
-               player.get_others_in_group()[0].leads
-
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        if player.follows:
-            player.makes_leadership_choice = False
-        else:
-            player.makes_leadership_choice = True
-
-    @staticmethod
-    def vars_for_template(player: Player):
-        partner_kudos = []
-        if player.session.config["public"]:
-            partner_kudos = player.get_others_in_group()[0].kudos
-        return dict(
-            public=player.session.config["public"],
-            partner_kudos=partner_kudos,
-            )
-
-
-# wait for player 2 to make a choice
-class SecondMoverWaitPage(WaitPage):
-    pass
+            if random.random() < 0.5:
+                players[0].is_leader = True
+                players[1].is_leader = False
+            else:
+                players[0].is_leader = False
+                players[1].is_leader = True
 
 
 class Decision2(Page):
-    form_model = "player"
-    form_fields = ["leadership_choice"]
-
     # only displayed to players that lead
-    # player 2 only makes a choice if player 1 does not lead or 2 does not follow (may only be true in follower_choice)
     @staticmethod
     def is_displayed(player: Player):
-        return player.makes_leadership_choice
+        return player.is_leader
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        # determine the number of correct choices
-        number_of_correct_choices = Constants.number_of_correct_choices_low
-        if player.high_ability:
-            number_of_correct_choices = Constants.number_of_correct_choices_high
-
-        # initialize variable if player is correct as False
-        player.leadership_correct = False
-
-        # randomly draw some choices that are correct and store it for later
-        draw_correct = random.sample(range(Constants.number_of_choices), number_of_correct_choices)
-        player.participant.draw_leadership_correct = draw_correct
-
-        # join them into a single string and save the correct choices (for debug purposes)
-        draw_correct_string = [str(element) for element in draw_correct]
-        draw_correct_single_string = ",".join(draw_correct_string)
-        player.leadership_draw_correct = draw_correct_single_string
-
-        # check if player's choice is in correct draw
-        if player.leadership_choice in draw_correct:
-            player.leadership_correct = True
-
-    @staticmethod
-    def vars_for_template(player: Player):
-        partner_kudos = []
-        if player.session.config["public"]:
-            partner_kudos = player.get_others_in_group()[0].kudos
-        return dict(
-            public=player.session.config["public"],
-            partner_kudos=partner_kudos,
-            partner_makes_choice=player.get_others_in_group()[0].makes_leadership_choice
-            )
+        # determine whether the leader hit the target
+        if random.random() < player.ability:
+            player.group.correct = True
+        else:
+            player.group.correct = False
 
 
 # wait for other player to make choice
@@ -480,5 +316,5 @@ class Feedback(Page):
         )
 
 
-page_sequence = [Instructions, Decision1, InfoWaitPage, Info, FirstMover, FirstMoverWaitPage, SecondMover,
-                 SecondMoverWaitPage, Decision2, FeedbackWaitPage, Feedback]
+page_sequence = [Instructions, Decision1, Beliefs, Leadership, LeadershipWaitPage,
+                 Decision2, FeedbackWaitPage, Feedback]
