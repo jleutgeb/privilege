@@ -3,4 +3,4 @@
 # otherwise, oTree will automatically overwrite it.
 # programmed with python 3.9
 otree>=5.0.0a21
-psycopg2>=2.8.4
+psycopg2-binary>=2.8.4

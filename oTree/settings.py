@@ -71,6 +71,15 @@ SESSION_CONFIGS = [
     ),
 ]
 
+ROOMS = [
+    dict(
+        name='econ101',
+        display_name='Econ 101 class',
+        participant_label_file='_rooms/econ101.txt',
+        use_secure_urls=True
+    ),
+]
+
 # add a participant field to store draws of correct boxes
 PARTICIPANT_FIELDS = ['draw_correct', 'draw_leadership_correct']
 
