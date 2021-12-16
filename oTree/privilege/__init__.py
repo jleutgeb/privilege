@@ -101,7 +101,7 @@ def creating_session(subsession):
     # loop through all players in the session
     for player in subsession.get_players():
         # draw from U~[0,1] and assign privilege
-        if player.draw_privilege < Constants.p:
+        if random.random() < Constants.p:
             player.privileged = True
         else:
             player.privileged = False
