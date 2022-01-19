@@ -4,96 +4,11 @@
 {{ block content }}
 
 
-<div id="information-overview" style="margin-left:10px; margin-bottom:10px">
-
-<table class="table">
-    <tr style="border-top:1px solid black">
-        <th class="text-center"></th>
-        <th class="text-center">You</th>
-        <th class="text-center">Your Partner</th>
-    </tr>
-    <tr>
-        <td class="text-center">Balls</td>
-        <td class="text-center">
-            <svg width="91" height="40">
-          <circle cx="20" cy="20" r="19" fill="lightgray" stroke="black"/>
-          <text x="16" y="25">?</text>
-
-          <circle cx="70" cy="20" r="19" fill="lightgray" stroke="black"/>
-          <text x="66" y="25" fill="black">?</text>
-            </svg>
-        </td>
-        <td class="text-center">
-            <svg width="91" height="40">
-          <circle cx="20" cy="20" r="19" fill="lightgray" stroke="black"/>
-          <text x="16" y="25">?</text>
-
-          <circle cx="70" cy="20" r="19" fill="lightgray" stroke="black"/>
-          <text x="66" y="25" fill="black">?</text>
-            </svg>
-
-        </td>
-    </tr>
-    <tr>
-        <td class="text-center">Card</td>
-        <td class="text-center">
-            <svg width="30" height="40">
-                {{ if player.high_signal }}
-                <rect width="30" height="40" fill="blue" stroke="black" />
-               {{ else }}
-               <rect width="30" height="40" fill="red" stroke="black" />
-                {{ endif }}
-            </svg>
-
-        </td>
-        <td class="text-center">
-            <svg width="30" height="40">
-           <rect width="30" height="40" fill="lightgray" stroke="black" />
-           <text x="11" y="25" fill="black">?</text>
-            </svg>
-
-        </td>
-    </tr>
-    <tr style="border-bottom:1px solid black">
-        <td class="text-center">Star</td>
-        <td class="text-center">
-            <svg height="40" width="40">
-                {{ if player.kudos }}
-                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="orange"/>
-                {{ else }}
-                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
-                {{ endif }}
-            </svg>
-
-        </td>
-        <td class="text-center">
-            {{ if public }}
-            <svg height="40" width="40">
-                {{ if partner_kudos }}
-                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="orange"/>
-                {{ else }}
-                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="transparent"/>
-                {{ endif }}
-            </svg>
-
-            {{ else }}
-            <svg height="40" width="40">
-                <path d="M 40 14 L 24 14 L 20 0 L 16 14 L 0 14 L 12 22 L 8 36 L 20 28 L 32 36 L 28 22 L 40 14" stroke="black" fill="lightgray"/>
-                <text x=16 y=25>?</text>
-            </svg>
-            {{ endif }}
-
-        </td>
-    </tr>
-</table>
-</div>
-
-
 <div style="margin-right:10px; margin-top:10px">
 
 <p>
-    You are the first-mover. You again have {{ Constants.number_of_choices }} doors to choose from.
-    Your partner also has {{ Constants.number_of_choices }} doors to choose from.
+    You are the first-mover. You again have ... doors to choose from.
+    Your partner also has ... doors to choose from.
 </p>
 
 <p>
@@ -101,8 +16,8 @@
     The number of winning doors among your partner's doors depends on the ball that we drew for them in the beginning of the experiment.
 </p>
     <ul>
-        <li>If the ball drawn from Urn 1 is blue, {{ Constants.number_of_correct_choices_high }} of the doors are winning doors.</li>
-        <li>If the ball drawn from Urn 1 is red, {{ Constants.number_of_correct_choices_low }} of the doors are winning doors.</li>
+        <li>If the ball drawn from Urn 1 is blue, ... of the doors are winning doors.</li>
+        <li>If the ball drawn from Urn 1 is red, ... of the doors are winning doors.</li>
     </ul>
 
 <p>The doors have been shuffled and the winning doors may be in different places than the first time.
@@ -110,34 +25,23 @@
 
 <p>If you decide to choose from your own doors:</p>
 
-{{ if not follower_choice }}
-
-<ul>
-    <li>You will choose a door from your own doors.</li>
-    <li>If you choose a winning door, both you and your partner will each receive {{ Constants.choice_payoff }}.</li>
-</ul>
-
-{{ else }}
-
 <ul>
     <li>Your partner will decide whether to choose the same door as you or to choose one of their doors.</li>
-    <li>If you choose a winning door, you will receive {{ Constants.choice_payoff }}.</li>
+    <li>If you choose a winning door, you will receive ....</li>
     <li>Your partner's earnings then depend on their choice:
         <ul>
             <li>If your partner decides to follow your door choice and you choose a winning door,
-                they will also receive {{ Constants.choice_payoff }}.</li>
+                they will also receive ....</li>
             <li>If your partner decides not to follow your door choice, they will choose from their own doors.
-                Your partner will then only receive {{ Constants.choice_payoff }} if they choose a winning door.</li>
+                Your partner will then only receive ... if they choose a winning door.</li>
         </ul>
     </li>
 </ul>
 
-{{ endif }}
-
 <p>If you decide not to choose from your own doors:</p>
 <ul>
     <li>Your partner will choose a door from their doors.</li>
-    <li>If your partner chooses a winning door, both you and your partner will each receive {{ Constants.choice_payoff }}.</li>
+    <li>If your partner chooses a winning door, both you and your partner will each receive ....</li>
 </ul>
 
 </div>
@@ -146,13 +50,4 @@
 
     {{ next_button }}
 
-{{ endblock }}
-
-{{ block styles }}
-<style>
-    #information-overview {
-    width: 300px;
-    float: right;
-}
-</style>
 {{ endblock }}

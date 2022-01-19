@@ -7,7 +7,7 @@ class PlayerBot(Bot):
     def play_round(self):
         yield Instructions
         yield Decision1, dict(
-            choice=random.choice(range(0, Constants.number_of_choices)),
+            choice=random.choice(range(0, C.NUMBER_OF_CHOICES)),
         )
         yield Info, dict(
             beliefs_high_ability=random.random(),

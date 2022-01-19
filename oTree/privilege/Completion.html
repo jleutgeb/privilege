@@ -1,0 +1,18 @@
+{{ block title }}
+    Completion
+{{ endblock }}
+{{ block content }}
+
+<a href="http://www.google.com" class="btn btn-primary">Return to Prolific</a>
+
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+    let completion_link = js_vars.completion_link;
+
+    window.onload = function(){
+        window.location.href=completion_link;
+    }
+</script>
+{{ endblock }}

@@ -4,23 +4,15 @@
 {{ block content }}
 
 <h4>Welcome</h4>
-<p>
-  Thank you very much for participating in this experiment.
-  During the experiment you are not allowed to communicate with other participants.
-  Please only use the programs and functions that were designed for the experiment.
-  If you have a question, please send a message in the Zoom chat. We will answer your question privately.
-  Do not post questions in the Zoom chat. If the question is relevant for all participants, we will notify the other participants.
-  If you break these rules, we may have to exclude you from the experiment and from payment.
-</p>
 
 <h4>Urn Draws</h4>
 
 <p>
   In this experiment we will secretly draw two balls for you and then put them back in the urn.
-  The first ball is drawn from Urn 1, which contains {{ high_ability_balls }} blue and {{ low_ability_balls }} red balls.
-  This means that the probability of drawing a blue ball is {{ high_ability_prob }}%.
-  The second ball is drawn from Urn 2, which contains  {{ privileged_balls }} white and {{ nonprivileged_balls }} black balls.
-  This means that the probability of drawing a white ball is {{ privileged_prob }}%.
+  The first ball is drawn from Urn 1, which contains ... blue and ... red balls.
+  This means that the probability of drawing a blue ball is ...%.
+  The second ball is drawn from Urn 2, which contains  ... white and ... black balls.
+  This means that the probability of drawing a white ball is ...%.
 </p>
 
 <p>
@@ -33,12 +25,12 @@
 
 <p>
   You will have to choose between three doors.
-  There is a prize of {{ Constants.choice_payoff }} behind some of the doors.
+  There is a prize of ... behind some of the doors.
   If you pick a winning door, you will receive the prize.
   The number of winning doors depends on the ball, which we drew for you from Urn 1.
   <ul>
-      <li>If the ball drawn from Urn 1 is blue, {{ Constants.number_of_correct_choices_high }} of the doors are winning doors.</li>
-      <li>If the ball drawn from Urn 1 is red, {{ Constants.number_of_correct_choices_low }} of the doors are winning doors.</li>
+      <li>If the ball drawn from Urn 1 is blue, ... of the doors are winning doors.</li>
+      <li>If the ball drawn from Urn 1 is red, ... of the doors are winning doors.</li>
   </ul>
   We will not tell you whether you or your partner chose a winning door until the end of the experiment.
 </p>
@@ -47,9 +39,9 @@
 
 <p>
   Afterwards, you will receive some information. We will show you a card that can be either blue or red.
-  If we drew a blue ball for you, we will draw a card from a pile that contains {{ pile_correct_cards }} blue and {{ pile_incorrect_cards }} red cards.
-  If we drew a red ball for you, we will draw a card from a pile that contains {{ pile_incorrect_cards }} blue and {{ pile_correct_cards }} red cards.
-  The probability that your card's color matches your ball's color is {{ pile_correct_prob }}%.
+  If we drew a blue ball for you, we will draw a card from a pile that contains ... blue and ... red cards.
+  If we drew a red ball for you, we will draw a card from a pile that contains ... blue and ... red cards.
+  The probability that your card's color matches your ball's color is ...%.
   Your partner will also see a card that depends on their ball's color.
   You will never learn about the color of your partner's card and your partner will never learn the color of your card.
 </p>
@@ -59,11 +51,7 @@
   You will only receive an orange star if we drew a white ball for you from Urn 2 and if you chose a winning door in the previous choice.
   If either the ball is black or you did not choose a winning door (or both), you will not receive an orange star.
   Your partner may also receive an orange star according to the same rules.
-  {{ if public }}
   We will let you know whether your partner received an orange star, and your partner will know whether you received one.
-  {{ else }}
-  We will not tell you whether your partner received an orange star until the end of the experiment, and your partner will not know whether you received one.
-  {{ endif }}
 </p>
 
 <p>
@@ -74,7 +62,7 @@
 
 <p>
   After you have received the information we will ask you to evaluate how likely some statements are.
-  For each statement there is a prize of {{ Constants.beliefs_payoff }}.
+  For each statement there is a prize of ....
   The probability of winning the prize depends on your guess and whether the statement is true.
   To maximize the probability of earning the prize you should simply guess how likely each statement is true on average.
   We will show you the exact probabilities when you make the choice.
@@ -84,94 +72,35 @@
 
 <p>
   We will shuffle the prizes behind the doors so the winning doors may be in a different place than the first time.
-  Both you and your partner again have {{ Constants.number_of_choices }} doors to choose from.
+  Both you and your partner again have ... doors to choose from.
   The number of winning doors again depends on the color of the ball that was drawn for you and your partner from Urn 1.
       <ul>
-        <li>If the ball drawn from Urn 1 is blue, {{ Constants.number_of_correct_choices_high }} of the doors are winning doors.</li>
-        <li>If the ball drawn from Urn 1 is red, {{ Constants.number_of_correct_choices_low }} of the doors are winning doors.</li>
+        <li>If the ball drawn from Urn 1 is blue, ... of the doors are winning doors.</li>
+        <li>If the ball drawn from Urn 1 is red, ... of the doors are winning doors.</li>
     </ul>
 
 </p>
-<p>
-  {{ if player.id_in_group == 1 }}
-  You are the first-mover and your partner is the second-mover.
-  First, you will decide if you want to choose one of your own doors or if you want to choose the same door as your partner.
-</p>
-
-<p>If you decide to choose from your own doors:</p>
-
-{{ if not follower_choice }}
-
-<ul>
-    <li>You will choose a door from your own doors.</li>
-    <li>If you choose a winning door, both you and your partner will each receive {{ Constants.choice_payoff }}.</li>
-</ul>
-
-{{ else }}
 
 <ul>
     <li>Your partner will decide whether to choose the same door as you or to choose one of their doors.</li>
-    <li>If you choose a winning door, you will receive {{ Constants.choice_payoff }}.</li>
+    <li>If you choose a winning door, you will receive ...</li>
     <li>Your partner's earnings then depend on their choice:
         <ul>
             <li>If your partner decides to follow your door choice and you choose a winning door,
-                they will also receive {{ Constants.choice_payoff }}.</li>
+                they will also receive ....</li>
             <li>If your partner decides not to follow your door choice, they will choose from their own doors.
-                Your partner will then receive {{ Constants.choice_payoff }} if they choose a winning door.</li>
+                Your partner will then receive ... if they choose a winning door.</li>
         </ul>
     </li>
 </ul>
 
-{{ endif }}
+
 
 <p>If you decide not to choose from your own doors:</p>
 <ul>
     <li>Your partner will choose a door from their doors.</li>
-    <li>If your partner chooses a winning door, both you and your partner will each receive {{ Constants.choice_payoff }}.</li>
+    <li>If your partner chooses a winning door, both you and your partner will each receive ....</li>
 </ul>
-
-{{ else }}
-
-<p>
-  Your partner is the first-mover and you are the second-mover.
-  First, your partner will decide if they want to choose one of their own doors or if they want to choose the same door as you.
-</p>
-
-<p>If your partner decides to choose from your their doors:</p>
-
-{{ if not follower_choice }}
-
-<ul>
-    <li>They will choose a door from their own doors.</li>
-    <li>If they choose a winning door, both you and your partner will each receive {{ Constants.choice_payoff }}.</li>
-</ul>
-
-{{ else }}
-
-<ul>
-    <li>You partner will decide whether to choose the same door as your partner or to choose one of your doors.</li>
-    <li>If your partner chooses a winning door, your partner will receive {{ Constants.choice_payoff }}.</li>
-    <li>Your earnings then depend on your choice:
-        <ul>
-            <li>If you decide to follow your partner's door choice and your partner chooses a winning door,
-                you will also receive {{ Constants.choice_payoff }}.</li>
-            <li>If you decide not to follow your partner's door choice, you will choose from your own doors.
-                You will then receive {{ Constants.choice_payoff }} if you choose a winning door.</li>
-        </ul>
-    </li>
-</ul>
-
-{{ endif }}
-
-<p>If your partner decides not to choose from their doors:</p>
-<ul>
-    <li>You will choose a door from your own doors.</li>
-    <li>If you choose a winning door, both you and your partner will each receive {{ Constants.choice_payoff }}.</li>
-</ul>
-
-
-
-{{ endif }}
 
 <h4>Survey</h4>
 <p>After the experiment there will be a short survey, for which you will earn some extra cash.</p>
