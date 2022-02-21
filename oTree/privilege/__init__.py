@@ -1,5 +1,8 @@
+from curses.ascii import NAK
+import pkgutil
 from otree.api import *
 import random
+import math
 
 c = Currency
 
@@ -9,33 +12,9 @@ doc = """
 
 
 class C(BaseConstants):
-    # name in url governs the link that participants see. instead of using "privilege", use something innocuous
     NAME_IN_URL = 'experiment'
-
-    # two players interact with each other
     PLAYERS_PER_GROUP = 2
-
-    # the game is played only once, no repeats
     NUM_ROUNDS = 1
-
-    # probability of being privileged P, else underprivileged U
-    P = 0.25
-
-    # probability of being high ability when P/U
-    PHI_P = 0.2
-    PHI_U = 0.8
-
-    # probability of hitting the target when high and low ability type
-    Q_H = 0.75
-    Q_L = 0.25
-
-    # probability of receiving kudos when P/U and correct
-    P_KP = 0.99
-    P_KU = 0.01
-
-    # payoffs for correct choice
-    CHOICE_PAYOFF = cu(5)
-    BELIEFS_PAYOFF = cu(2.5)
 
 
 class Subsession(BaseSubsession):
@@ -43,20 +22,32 @@ class Subsession(BaseSubsession):
 
 
 class Group(BaseGroup):
-    high = models.FloatField()  # leader's probability of hitting the target
-    correct = models.BooleanField()  # does the leader hit the target
+    payment_choices = models.BooleanField() # variable if group is paid for leadership or beliefs (to eliminate hedging)
+    completion_payoff = models.CurrencyField()
+    decision_payoff = models.CurrencyField()
+    beliefs_payoff = models.CurrencyField()
+    made_leadership_choice = models.BooleanField(initial=False) # whether all players in the group made the leadership choice
+    leader = models.IntegerField()
+    phiP = models.FloatField() # chance that privileged player is high type
+    phiU = models.FloatField() # chance that underprivileged player is high type
+    qH = models.FloatField() # chance that high type is correct
+    qL = models.FloatField() # chance that low type is correct
+    pkP = models.FloatField()
+    pkU = models.FloatField()
+    qL_high = models.BooleanField() # variable for treatment
 
 
 class Player(BasePlayer):
-    ## consent
-    consent = models.BooleanField(choices=[[True, 'Yes']])
-    
     ## privilege game
     high = models.BooleanField()  # H type or not (L)
-    privileged = models.BooleanField()  # P type or not (U)
-    ability = models.FloatField()  # player's probability of hitting the target
+    privilege = models.BooleanField()  # P type or not (U)
     correct = models.BooleanField()  # was the player correct
     kudos = models.BooleanField()  # does the player receive kudos
+    q = models.FloatField() # player's actual chance
+
+    leads = models.BooleanField()  # save whether the subject wants to lead
+    leadership_correct = models.BooleanField()  # is the leader correct (conditional on being the leader)
+    made_leadership_choice = models.BooleanField(initial=False) # whether the player made the leadership choice
 
     # beliefs about own and partner's types 
     bi = models.FloatField(min=0, max=1)
@@ -65,14 +56,6 @@ class Player(BasePlayer):
     obi = models.BooleanField()  # does the player receive prize for beliefs about self
     obj = models.BooleanField()  # does the player receive prize for beliefs about partner
 
-    # save whether the subject wants to lead/follow
-    wants_leader = models.BooleanField()  # used to record actual outcome
-
-    # track whether the subject makes the choice in the leadership part of the game
-    is_leader = models.BooleanField()
-
-    # variable if player is paid for beliefs (to eliminate hedging)
-    payment_choices = models.BooleanField()
 
     ## survey
     gender = models.StringField(
@@ -80,54 +63,15 @@ class Player(BasePlayer):
             ['m', 'male'],
             ['f', 'female'],
             ['o', 'other'],
+            ['ns', "I'd rather not say"]
         ],
         label="Gender"
     )
-    age = models.IntegerField(min=0, max=100, label="How old are you?")
-    field = models.LongStringField(label="Which field of study?")
-    semesters = models.IntegerField(min=0, max=100, label="How many semesters have you been studying?")
+    age = models.IntegerField(min=0, max=100, label="How old are you? (in years)")
     strategy = models.LongStringField(blank=True,
-                                      label="Please describe your thought process or your strategy in this experiment.")
+                                      label="Please describe your thought process or your strategy in this experiment. (optional)")
     comments = models.LongStringField(blank=True,
-                                      label="Do you have any other comments or questions about this experiment?")
-
-
-# when creating the session, set some variables
-def creating_session(subsession):
-    # loop through all players in the session
-    for player in subsession.get_players():
-        # assign privilege
-        if random.random() < C.P:
-            player.privileged = True
-        else:
-            player.privileged = False
-
-        # assign ability type
-        if player.privileged and random.random() < C.PHI_P:
-            player.high = True
-        elif not player.privileged and random.random() < C.PHI_U:
-            player.high = True
-        else:
-            player.high = False
-
-        # assign correctness
-        if player.high and random.random() < C.Q_H:
-            player.correct = True
-        elif not player.high and random.random() < C.Q_L:
-            player.correct = True
-        else:
-            player.correct = True
-
-        # assign kudos
-        if player.privileged and player.correct and random.random() < C.P_KP:
-            player.kudos = True
-        elif not player.privileged and player.correct and random.random() < C.P_KU:
-            player.kudos = True
-        else:
-            player.kudos = False
-
-        # assign payment for beliefs (50/50 chance)
-        player.payment_choices = random.random() < 0.5
+                                      label="Do you have any other comments or questions about this study? (optional)")
 
 
 # FUNCTIONS
@@ -139,7 +83,8 @@ def probability_prize_bsr(statement, belief):
         return 1 - belief ** 2
 
 
-def draw_prize_bsr(statement, belief, draw):
+def draw_prize_bsr(statement, belief):
+    draw = random.random()
     if draw < probability_prize_bsr(statement, belief):
         return True
     else:
@@ -147,57 +92,149 @@ def draw_prize_bsr(statement, belief, draw):
 
 
 # PAGES
-class Consent(Page):
-    form_model = "player"
-    form_fields = ["consent"]
+def group_by_arrival_time_method(subsession, waiting_players):
+    print('in group_by_arrival_time_method')
+    PH_players = [p for p in waiting_players if p.participant.privilege and p.participant.qL_high]
+    PL_players = [p for p in waiting_players if p.participant.privilege and not p.participant.qL_high]
+    
+    UH_players = [p for p in waiting_players if not p.participant.privilege and p.participant.qL_high]
+    UL_players = [p for p in waiting_players if not p.participant.privilege and not p.participant.qL_high]
+
+    if len(PH_players) >= 1 and len(UH_players) >= 1:
+        print('about to create a qL_high group')
+        return [PH_players[0], UH_players[0]]
+    if len(PL_players) >= 1 and len(UL_players) >= 1:
+        print('about to create a qL_low group')
+        return [PL_players[0], UL_players[0]]
+    print('not enough players yet to create a group')
 
 
-class Instructions(Page):
-    # on the instruction page, push some variables to the page: How many winning balls are in each urn, etc.
-    @staticmethod
-    def vars_for_template(player: Player):
-        return dict()
+class Matching(WaitPage):
+    group_by_arrival_time = True
+    def after_all_players_arrive(group: Group):
+        group.payment_choices = random.random() < 0.5
+        group.completion_payoff = group.session.config['completion_payoff']
+        group.decision_payoff = group.session.config['decision_payoff']
+        group.beliefs_payoff = group.session.config['beliefs_payoff']
+        group.qL_high = all([p.participant.qL_high for p in group.get_players()])
+        if group.qL_high:
+            group.qL = group.session.config['qL_high']
+        else:
+            group.qL = group.session.config['qL_low']
+        group.qH = group.session.config['qH']
+        group.phiP = group.session.config['phiP']
+        group.phiU = group.session.config['phiU']
+        group.pkP = group.session.config['pkP']
+        group.pkU = group.session.config['pkU']
+
+        if group.qL_high:
+            group.qL = group.session.config['qL_high']
+        else:
+            group.qL = group.session.config['qL_low']
+
+        for p in group.get_players():
+            p.privilege = p.participant.privilege
+            if p.privilege:
+                p.high = random.random() < p.group.phiP
+            else:
+                p.high = random.random() < p.group.phiU
+            if p.high:
+                p.q = p.group.qH
+            else:
+                p.q = p.group.qL
+            p.correct = random.random() < p.q
+            p.leadership_correct = random.random() < p.q
+            if p.correct and p.privilege and random.random() < p.group.pkP:
+                p.kudos = True
+            elif p.correct and not p.privilege and random.random() < p.group.pkU:
+                p.kudos = True
+            else:
+                p.kudos = False
 
 
 class Decision(Page):
     pass
 
 
-class Matching(WaitPage):
-    group_by_arrival_time = True
-
-
 class Beliefs(Page):
     # on this page the player reports their beliefs
     form_model = "player"
     form_fields = ["bi", "bj"]
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(
+            partner_kudos = player.get_others_in_group()[0].kudos
+        )
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.obi = draw_prize_bsr(player.high, player.bi)
+        player.obj = draw_prize_bsr(player.get_others_in_group()[0].high, player.bj)
+        if not player.group.payment_choices:
+            if player.obi:
+                player.payoff += player.group.beliefs_payoff
+            if player.obj:
+                player.payoff += player.group.beliefs_payoff
 
 
 class Leadership(Page):
     # players say whether they want to lead
     form_model = "player"
-    form_fields = ["wants_leader"]
+    form_fields = ["leads"]
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.made_leadership_choice = True
+        group = player.group
+        players = group.get_players()
+        partner = player.get_others_in_group()[0]
+        if partner.made_leadership_choice:
+            group.made_leadership_choice = True
+            p1 = group.get_player_by_id(1)
+            p2 = group.get_player_by_id(2)
+            if p1.leads and not p2.leads:
+                player.group.leader = 1
+            elif not p1.leads and p2.leads:
+                player.group.leader = 2
+            else:
+                player.group.leader = random.randint(1,2)
+            leader = group.get_player_by_id(player.group.leader)
+            if player.group.payment_choices and leader.leadership_correct:
+                for p in players:
+                    p.payoff += player.group.decision_payoff
 
 
 class Survey(Page):
     form_model = "player"
-    form_fields = ['gender', 'age', 'field', 'semesters', 'strategy', 'comments']
-
-    def is_displayed(player):
-        return player.consent
+    form_fields = ['gender', 'age', 'strategy', 'comments']
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.payoff += player.group.completion_payoff
 
 
 class Completion(Page):
     # send players back to prolific
     form_model = "player"
 
-    def is_displayed(player):
-        return player.consent
+    @staticmethod
+    def vars_for_template(player: Player):
+        if not player.group.made_leadership_choice:
+            leadership_correct = 'NA'
+        else:
+            leadership_correct = player.group.get_player_by_id(player.group.leader).leadership_correct
+        return dict(
+            leadership_correct = leadership_correct,
+            bi = int(round(player.bi * 100,0)),
+            bj = int(round(player.bj * 100,0)),
+            partner_high = player.get_others_in_group()[0].high,
+            prob_bi = round(probability_prize_bsr(player.high, player.bi), 4) * 100,
+            prob_bj = round(probability_prize_bsr(player.get_others_in_group()[0].high, player.bj), 4) * 100,
+        )
 
     @staticmethod              
     def js_vars(player):
         return dict(
-            completion_link=player.subsession.session.config['completion_link']
+            completion_link=player.subsession.session.config['completion_link'],
         )
 
-page_sequence = [Consent, Instructions, Decision, Matching, Beliefs, Leadership, Survey, Completion]
+
+page_sequence = [Matching, Decision, Beliefs, Leadership, Survey, Completion]

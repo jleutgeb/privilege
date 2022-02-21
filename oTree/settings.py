@@ -4,8 +4,18 @@ SESSION_CONFIGS = [
     dict(
         name='privilege',
         display_name='Privilege',
-        app_sequence=['privilege'],
+        app_sequence=['instructions', 'privilege'],
         num_demo_participants=2,
+        phiP=0.4,
+        phiU=0.6,
+        qH=0.75,
+        qL_low=0.23,
+        qL_high=0.69,
+        pkP=1,
+        pkU=0,
+        completion_payoff=2,
+        decision_payoff=1,
+        beliefs_payoff=0.5,
         #completion_link='https://app.prolific.co/submissions/complete?cc=000',
         completion_link='http://www.google.com',
     ),
@@ -21,7 +31,7 @@ ROOMS = [
 ]
 
 # add a participant field to store draws of correct boxes
-PARTICIPANT_FIELDS = ['draw_correct', 'draw_leadership_correct']
+PARTICIPANT_FIELDS = ['privilege', 'qL_high']
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
 # in SESSION_CONFIGS, except those that explicitly override it.
@@ -37,7 +47,7 @@ SESSION_CONFIG_DEFAULTS = dict(
 LANGUAGE_CODE = 'en'
 
 # e.g. EUR, GBP, CNY, JPY
-REAL_WORLD_CURRENCY_CODE = 'EUR'
+REAL_WORLD_CURRENCY_CODE = '£'
 USE_POINTS = False
 
 ADMIN_USERNAME = 'admin'

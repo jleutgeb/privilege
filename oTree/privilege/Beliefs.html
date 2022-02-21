@@ -9,14 +9,11 @@
 <div style="margin-right:10px; margin-top:10px">
 
 <p>
-    You receive ....
-    The probability that the card's color matches the ball's color that was drawn from Urn 1 is ...%.
+    You receive {{ if player.kudos }}{{ else }}no{{ endif }} kudos.
 </p>
 
 <p>
-    You receive ....
-    Your partner receives ...
-    To receive a star you must choose a winning door and the ball that was drawn from Urn 2 must be white.
+    Your partner receives {{ if partner_kudos }}{{ else }}no{{ endif }} kudos.
 </p>
 
     <p>Please evaluate how likely the following statements are. To maximize the probability of earning the prize you should simply guess how likely each statement is true on average.</p>
@@ -29,7 +26,7 @@
     <tr style="border-top:2px solid black">
         <td></td>
         <td></td>
-        <td colspan="2" style="border-bottom:1px solid black">Your chance of winning {{ C.BELIEFS_PAYOFF }} </td>
+        <td colspan="2" style="border-bottom:1px solid black">Your chance of winning {{ group.beliefs_payoff }} </td>
     </tr>
 
     <tr style="border-bottom:1px solid black">
@@ -43,7 +40,7 @@
 
     <tr>
         <td style="width: 450px">
-            <label for="bi">We drew a blue ball for you from Urn 1.</label>
+            <label for="bi">I am a high type.</label>
             <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
                 <span class="input-group-text">0%</span>
                 <input type="range" name="bi" id="bi" min="0" max="1" step="0.01" class="slider">
@@ -66,7 +63,7 @@
 
     <tr>
         <td style="width: 450px">
-            <label for="bj_ability">We drew a blue ball for your partner from Urn 1.</label>
+            <label for="bj_ability">My partner is a high type.</label>
             <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
                 <span class="input-group-text">0%</span>
                 <input type="range" name="bj" id="bj" min="0" max="1" step="0.01" class="slider">
@@ -155,7 +152,6 @@
         width: 100%;
         height: 100%;
         cursor: pointer;
-        animate: 0.2s;
         box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
         background: lightgray;
         border-radius: 0;
@@ -182,7 +178,6 @@
         width: 100%;
         height: 100%;
         cursor: pointer;
-        animate: 0.2s;
         box-shadow: 0 0 0 #000000, 0 0 0 #0d0d0d;
         background: lightgray;
         border-radius: 0;
@@ -203,7 +198,6 @@
         width: 100%;
         height: 100%;
         cursor: pointer;
-        animate: 0.2s;
         background: lightgray;
         border-color: transparent;
         border-width: 39px 0;

@@ -3,7 +3,71 @@
 {{ endblock }}
 {{ block content }}
 
-<a href="http://www.google.com" class="btn btn-primary">Return to Prolific</a>
+{{ if group.payment_choices }}  
+
+    {{ if group.made_leadership_choice }} 
+    <p>Your group is paid for the leader's action. {{ if group.leader == player.id_in_group }}You are the leader and you were{{ else }}Your partner is the leader and he or she was{{ endif }} {{ if leadership_correct }}successful{{ else }}unsuccessful{{ endif }}. You earn {{ group.completion_payoff }} for completing this study{{ if leadership_correct }} and an additional {{ group.decision_payoff }} because your group's leader was successful{{ endif }}. In total you earned {{ player.payoff }}. You can click the button "Return to Prolific" to return to Prolific. Thank you very much for participating.</p>
+    {{ else }}
+    <p>Your group is paid for the leader's action but your partner has not made his or her leadership yet. You are guaranteed earnings of {{ group.completion_payoff }} for completing this study and you may earn an additional {{ group.decision_payoff }} if your group's leader is successful. If you want to learn about your final earnings before heading back to Prolific, you can reload this page by clicking on the button "Reload Page" below. Alternatively, you can click the button "Return to Prolific" to return to Prolific immediately. Your earnings will not be affected. Thank you very much for participating.</p>
+    {{ endif }}
+
+{{ else }}
+<p>Your group is paid for beliefs.</p>
+
+<div style="margin:10px">
+
+    <table class="table">
+    <tr style="border-bottom:1px solid black">
+        <td></td>
+        <td>You guessed</td>
+        <td>Your chance of winning</td>
+        <td>Outcome</td>
+    </tr>
+    <tr>
+        <td>
+            You were a {{ if player.high }}high{{ else }}low{{ endif }} type.
+        </td>
+
+        <td>
+            {{ bi }}%
+        </td>
+
+        <td>
+            {{ prob_bi }}%
+        </td>
+        <td>
+            {{ if player.obi }}You won XXX.
+            {{ else }} You did not win.
+            {{ endif }}
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            Your partner was a {{ if partner_high }}high{{ else }}low{{ endif }} type.
+        </td>
+
+        <td>
+            {{ bj }}%
+        </td>
+
+        <td>
+            {{ prob_bj }}%
+        </td>
+        <td>
+            {{ if player.obj }}You won XXX.
+            {{ else }} You did not win.
+            {{ endif }}
+        </td>
+    </tr>
+
+</table>
+</div>
+
+{{ endif }}
+
+{{ if not group.made_leadership_choice and group.payment_choices }} <a onclick="reload_page()" class="btn btn-primary">Reload Page</a> {{ endif }}
+<a onclick="return_to_prolific()" class="btn btn-primary">Return to Prolific</a>
 
 {{ endblock }}
 
@@ -11,8 +75,11 @@
 <script>
     let completion_link = js_vars.completion_link;
 
-    window.onload = function(){
+    function return_to_prolific(){
         window.location.href=completion_link;
+    }
+    function reload_page(){
+        location.reload(); 
     }
 </script>
 {{ endblock }}

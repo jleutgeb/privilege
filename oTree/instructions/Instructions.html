@@ -1,0 +1,69 @@
+{{ block title }}
+    Instructions
+{{ endblock }}
+{{ block content }}
+
+<h4>Welcome</h4>
+
+<h4>Urn Draws</h4>
+
+<p>
+  In this experiment you will go blind bowling cousin
+</p>
+
+<p>
+  You will interact with another participant in this experiment. We will refer to this person as your partner.
+</p>
+
+<h4>Decision 1</h4>
+
+<p>
+  You will bowl but not earn any money.
+</p>
+
+<h4>Information and Guesses</h4>
+
+<p>
+  Afterwards, you will receive some information. We will show you kudos. 
+</p>
+
+<p>
+  We will summarize all the information that you have received in a table like the one below.
+  If you have not received information, the elements will be colored grey and have a question mark.
+  After you have received information, the elements will be updated with the corresponding color.
+</p>
+
+<p>
+  After you have received the information we will ask you to evaluate how likely some statements are.
+  For each statement there is a prize of {{ beliefs_payoff }}
+  The probability of winning the prize depends on your guess and whether the statement is true.
+  To maximize the probability of earning the prize you should simply guess how likely each statement is true on average.
+  We will show you the exact probabilities when you make the choice.
+</p>
+
+<h4>Decision 2</h4>
+
+<p>
+  You will bowl again and you have to decide whether you want to lead.
+
+</p>
+
+<p>If you decide not to choose from your own doors:</p>
+<ul>
+    <li>Your partner will choose a door from their doors.</li>
+    <li>If your bowls well, both you and your partner will each receive {{ decision_payoff }}.</li>
+</ul>
+
+<h4>Survey</h4>
+<p>After the experiment there will be a short survey.</p>
+
+<h4>Completion</h4>
+
+<p>
+  At the end of the experiment you are free to wait or return to Prolific. For completion you will earn {{ completion_payoff }}.
+</p>
+
+
+    {{ next_button }}
+
+{{ endblock }}
