@@ -3,6 +3,7 @@ import pkgutil
 from otree.api import *
 import random
 import math
+import time
 
 c = Currency
 
@@ -56,6 +57,15 @@ class Player(BasePlayer):
     obi = models.BooleanField()  # does the player receive prize for beliefs about self
     obj = models.BooleanField()  # does the player receive prize for beliefs about partner
 
+    # no partner shows up
+    no_partner = models.BooleanField(initial=False)
+    privilege_cp = models.BooleanField()
+    high_cp = models.BooleanField()
+    q_cp = models.FloatField()
+    correct_cp = models.BooleanField()
+    kudos_cp = models.BooleanField()
+    leads_cp = models.BooleanField()
+    leadership_correct_cp = models.BooleanField() 
 
     ## survey
     gender = models.StringField(
@@ -91,6 +101,10 @@ def draw_prize_bsr(statement, belief):
         return False
 
 
+def waiting_too_long(player):
+    return time.time() - player.participant.wait_page_arrival > 10*60
+
+
 # PAGES
 def group_by_arrival_time_method(subsession, waiting_players):
     print('in group_by_arrival_time_method')
@@ -107,6 +121,10 @@ def group_by_arrival_time_method(subsession, waiting_players):
         print('about to create a qL_low group')
         return [PL_players[0], UL_players[0]]
     print('not enough players yet to create a group')
+    for player in waiting_players:
+        if waiting_too_long(player):
+            player.no_partner = True
+            return [player]
 
 
 class Matching(WaitPage):
@@ -151,6 +169,25 @@ class Matching(WaitPage):
             else:
                 p.kudos = False
 
+            if p.no_partner:
+                p.privilege_cp = not p.privilege
+                if p.privilege_cp:
+                    p.high_cp = random.random() < p.group.phiP
+                else:
+                    p.high_cp = random.random() < p.group.phiU
+                if p.high_cp:
+                    p.q_cp = p.group.qH
+                else:
+                    p.q_cp = p.group.qL
+                p.correct_cp = random.random() < p.q_cp
+                p.leadership_correct_cp = random.random() < p.q_cp
+                if p.correct_cp and p.privilege_cp and random.random() < p.group.pkP:
+                    p.kudos_cp = True
+                elif p.correct_cp and not p.privilege_cp and random.random() < p.group.pkU:
+                    p.kudos_cp = True
+                else:
+                    p.kudos_cp = False
+
 
 class Decision(Page):
     pass
@@ -162,14 +199,22 @@ class Beliefs(Page):
     form_fields = ["bi", "bj"]
     @staticmethod
     def vars_for_template(player: Player):
-        return dict(
+        if not player.no_partner:
             partner_kudos = player.get_others_in_group()[0].kudos
+        else:
+            partner_kudos = player.kudos_cp
+        return dict(
+            partner_kudos = partner_kudos
         )
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.obi = draw_prize_bsr(player.high, player.bi)
-        player.obj = draw_prize_bsr(player.get_others_in_group()[0].high, player.bj)
+        if not player.no_partner:
+            partner_high = player.get_others_in_group()[0].high
+        else:
+            partner_high = player.high_cp
+        player.obj = draw_prize_bsr(partner_high, player.bj)
         if not player.group.payment_choices:
             if player.obi:
                 player.payoff += player.group.beliefs_payoff
@@ -186,8 +231,7 @@ class Leadership(Page):
         player.made_leadership_choice = True
         group = player.group
         players = group.get_players()
-        partner = player.get_others_in_group()[0]
-        if partner.made_leadership_choice:
+        if not player.no_partner and player.get_others_in_group()[0].made_leadership_choice:
             group.made_leadership_choice = True
             p1 = group.get_player_by_id(1)
             p2 = group.get_player_by_id(2)
@@ -199,6 +243,41 @@ class Leadership(Page):
                 player.group.leader = random.randint(1,2)
             leader = group.get_player_by_id(player.group.leader)
             if player.group.payment_choices and leader.leadership_correct:
+                for p in players:
+                    p.payoff += player.group.decision_payoff
+        elif player.no_partner:
+            group.made_leadership_choice = True
+            # calculate prob of being high type from the perspective of computer player
+            if player.kudos and player.privilege:
+                prob_player = group.phiP * group.qH / (group.phiP * group.qH + (1 - group.phiP) * group.qL)
+            elif player.kudos and not player.privilege:
+                prob_player = group.phiU * group.qH / (group.phiU * group.qH + (1 - group.phiU) * group.qL)
+            elif not player.kudos and player.privilege:
+                prob_player = (group.phiP * (1 - group.qH) + group.phiP * group.qH * (1 - group.pkP)) / (group.phiP * (1 - group.qH) + group.phiP * group.qH * (1 - group.pkP) + (1 - group.phiP) * (1 - group.qL) + (1 - group.phiP) * group.qL * (1 - group.pkP))
+            elif not player.kudos and not player.privilege:
+                prob_player = (group.phiU * (1 - group.qH) + group.phiU * group.qH * (1 - group.pkP)) / (group.phiU * (1 - group.qH) + group.phiU * group.qH * (1 - group.pkP) + (1 - group.phiU) * (1 - group.qL) + (1 - group.phiU) * group.qL * (1 - group.pkP))
+
+            if player.kudos_cp and player.privilege_cp:
+                prob_cp = group.phiP * group.qH / (group.phiP * group.qH + (1 - group.phiP) * group.qL)
+            elif player.kudos_cp and not player.privilege_cp:
+                prob_cp = group.phiU * group.qH / (group.phiU * group.qH + (1 - group.phiU) * group.qL)
+            elif not player.kudos_cp and player.privilege_cp:
+                prob_cp = (group.phiP * (1 - group.qH) + group.phiP * group.qH * (1 - group.pkP)) / (group.phiP * (1 - group.qH) + group.phiP * group.qH * (1 - group.pkP) + (1 - group.phiP) * (1 - group.qL) + (1 - group.phiP) * group.qL * (1 - group.pkP))
+            elif not player.kudos_cp and not player.privilege_cp:
+                prob_cp = (group.phiU * (1 - group.qH) + group.phiU * group.qH * (1 - group.pkP)) / (group.phiU * (1 - group.qH) + group.phiU * group.qH * (1 - group.pkP) + (1 - group.phiU) * (1 - group.qL) + (1 - group.phiU) * group.qL * (1 - group.pkP))
+
+            player.leads_cp = prob_cp >= prob_player
+            if player.leads and not player.leads_cp:
+                player.group.leader = 1
+            elif not p1.leads and p2.leads:
+                player.group.leader = 0
+            else:
+                player.group.leader = random.randint(0,1)
+            if player.group.leader == 1:
+                leadership_correct = player.leadership_correct
+            else:
+                leadership_correct = player.leadership_correct_cp
+            if player.group.payment_choices and leadership_correct:
                 for p in players:
                     p.payoff += player.group.decision_payoff
 
@@ -217,17 +296,27 @@ class Completion(Page):
 
     @staticmethod
     def vars_for_template(player: Player):
-        if not player.group.made_leadership_choice:
-            leadership_correct = 'NA'
-        else:
+        if not player.no_partner and player.group.made_leadership_choice:
             leadership_correct = player.group.get_player_by_id(player.group.leader).leadership_correct
+        elif player.no_partner and player.group.made_leadership_choice and player.group.leader == 1:
+            leadership_correct = player.leadership_correct
+        elif player.no_partner and player.group.made_leadership_choice and player.group.leader == 0:
+            leadership_correct = player.leadership_correct_cp
+        else:
+            leadership_correct = 'NA'
+        if not player.no_partner:
+            prob_bj = round(probability_prize_bsr(player.get_others_in_group()[0].high, player.bj), 4) * 100
+            partner_high = player.get_others_in_group()[0].high
+        else:
+            prob_bj = round(probability_prize_bsr(player.high_cp, player.bj), 4) * 100
+            partner_high = player.high_cp
         return dict(
             leadership_correct = leadership_correct,
             bi = int(round(player.bi * 100,0)),
             bj = int(round(player.bj * 100,0)),
-            partner_high = player.get_others_in_group()[0].high,
+            partner_high = partner_high,
             prob_bi = round(probability_prize_bsr(player.high, player.bi), 4) * 100,
-            prob_bj = round(probability_prize_bsr(player.get_others_in_group()[0].high, player.bj), 4) * 100,
+            prob_bj = prob_bj
         )
 
     @staticmethod              

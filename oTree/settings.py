@@ -32,7 +32,7 @@ ROOMS = [
 ]
 
 # add a participant field to store draws of correct boxes
-PARTICIPANT_FIELDS = ['privilege', 'qL_high']
+PARTICIPANT_FIELDS = ['privilege', 'qL_high', 'wait_page_arrival']
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
 # in SESSION_CONFIGS, except those that explicitly override it.

@@ -1,5 +1,6 @@
 from otree.api import *
 import math
+import time
 
 doc = """
 Your app description
@@ -58,6 +59,8 @@ class Instructions(Page):
                 beliefs_payoff = cu(player.session.config['beliefs_payoff']),
             )
         )
-
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.participant.wait_page_arrival = time.time()
 
 page_sequence = [Consent, Instructions]
