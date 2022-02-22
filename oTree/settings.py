@@ -16,6 +16,7 @@ SESSION_CONFIGS = [
         completion_payoff=2,
         decision_payoff=1,
         beliefs_payoff=0.5,
+        treatment='both', # qL_high, qL_low or both
         #completion_link='https://app.prolific.co/submissions/complete?cc=000',
         completion_link='http://www.google.com',
     ),

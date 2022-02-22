@@ -32,7 +32,12 @@ def creating_session(subsession):
     for p in players:
         p.privilege = i % 2 == 0
         p.participant.privilege = p.privilege
-        p.qL_high = math.ceil((i+1)/2) % 2 == 0
+        if subsession.session.config['treatment'] == 'qL_high':
+            p.qL_high = True
+        elif subsession.session.config['treatment'] == 'qL_low':
+            p.qL_high = False
+        elif subsession.session.config['treatment'] == 'both':
+            p.qL_high = math.ceil((i+1)/2) % 2 == 0
         p.participant.qL_high = p.qL_high
         i += 1
 
