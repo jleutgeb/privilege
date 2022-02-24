@@ -17,6 +17,7 @@ SESSION_CONFIGS = [
         decision_payoff=1,
         beliefs_payoff=0.5,
         treatment='both', # qL_high, qL_low or both
+        max_wait_time=600, # maximum time a player has to wait for a partner until the computer takes over
         #completion_link='https://app.prolific.co/submissions/complete?cc=000',
         completion_link='http://www.google.com',
     ),

@@ -102,7 +102,7 @@ def draw_prize_bsr(statement, belief):
 
 
 def waiting_too_long(player):
-    return time.time() - player.participant.wait_page_arrival > 10*60
+    return time.time() - player.participant.wait_page_arrival > player.session.config['max_wait_time']
 
 
 # PAGES
