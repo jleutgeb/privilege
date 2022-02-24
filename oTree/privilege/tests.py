@@ -5,22 +5,18 @@ import random
 
 class PlayerBot(Bot):
     def play_round(self):
-        yield Instructions
-        yield Decision1, dict(
-            choice=random.choice(range(0, C.NUMBER_OF_CHOICES)),
-        )
-        yield Info, dict(
-            beliefs_high_ability=random.random(),
-            beliefs_privileged=random.random(),
-            beliefs_partner_high_ability=random.random(),
-            beliefs_partner_privileged=random.random(),
-        )
-        if self.player.id_in_group == 1:
-            yield FirstMover, dict(leads=random.choice([True, False]))
-        if self.player.id_in_group == 2 and self.player.session.config["follower_choice"] and \
-                self.player.get_others_in_group()[0].leads:
-            yield SecondMover, dict(follows=random.choice([True, False]))
-        if self.player.makes_leadership_choice:
-            yield Decision2, dict(leadership_choice=random.choice([True, False]))
-        yield Feedback
-
+        yield Decision
+        yield Submission(Beliefs, dict(bi=random.random(), bj=random.random()), check_html=False)
+        yield Leadership, dict(leads=random.choice([True, False]))
+        yield Survey, dict(
+            gender=random.choice(['m', 'f', 'o', 'ns']),
+            age=random.randint(0,99),
+            language=random.choice(['English', 'Other']),
+            residence=random.choice(['UK', 'Other']),
+            nationality=random.choice(['UK', 'Other']),
+            student=random.choice([True, False]),
+            employment=random.choice([True, False]),
+            zip=random.choice(['idk', 'uk', 'zip', 'codes', 'by', 'heart']),
+            comments='I am a bot'
+            )
+        yield Submission(Completion, check_html=False)

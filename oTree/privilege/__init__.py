@@ -90,12 +90,12 @@ class Player(BasePlayer):
         choices=['UK', 'Other'],
         label='What is your nationality?'
     )
-    student = models.StringField(
-        choices=['Yes', 'No'],
+    student = models.BooleanField(
+        choices=[[True, 'Yes'], [False, 'No']],
         label='Are you a student?'
     )
-    employment = models.StringField(
-        choices=['Yes', 'No'],
+    employment = models.BooleanField(
+        choices=[[True, 'Yes'], [False, 'No']],
         label='Are you currently employed?'
     )
     zip = models.StringField(
