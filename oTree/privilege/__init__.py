@@ -107,7 +107,7 @@ def waiting_too_long(player):
 
 # PAGES
 def group_by_arrival_time_method(subsession, waiting_players):
-    print('in group_by_arrival_time_method')
+    # print('in group_by_arrival_time_method')
     PH_players = [p for p in waiting_players if p.participant.privilege and p.participant.qL_high]
     PL_players = [p for p in waiting_players if p.participant.privilege and not p.participant.qL_high]
     
@@ -115,12 +115,12 @@ def group_by_arrival_time_method(subsession, waiting_players):
     UL_players = [p for p in waiting_players if not p.participant.privilege and not p.participant.qL_high]
 
     if len(PH_players) >= 1 and len(UH_players) >= 1:
-        print('about to create a qL_high group')
+        # print('about to create a qL_high group')
         return [PH_players[0], UH_players[0]]
     if len(PL_players) >= 1 and len(UL_players) >= 1:
-        print('about to create a qL_low group')
+        # print('about to create a qL_low group')
         return [PL_players[0], UL_players[0]]
-    print('not enough players yet to create a group')
+    # print('not enough players yet to create a group')
     for player in waiting_players:
         if waiting_too_long(player):
             player.no_partner = True
@@ -305,17 +305,17 @@ class Completion(Page):
         else:
             leadership_correct = 'NA'
         if not player.no_partner:
-            prob_bj = round(probability_prize_bsr(player.get_others_in_group()[0].high, player.bj), 4) * 100
+            prob_bj = round(probability_prize_bsr(player.get_others_in_group()[0].high, player.bj)* 100, 2) 
             partner_high = player.get_others_in_group()[0].high
         else:
-            prob_bj = round(probability_prize_bsr(player.high_cp, player.bj), 4) * 100
+            prob_bj = round(probability_prize_bsr(player.high_cp, player.bj)* 100, 2) 
             partner_high = player.high_cp
         return dict(
             leadership_correct = leadership_correct,
             bi = int(round(player.bi * 100,0)),
             bj = int(round(player.bj * 100,0)),
             partner_high = partner_high,
-            prob_bi = round(probability_prize_bsr(player.high, player.bi), 4) * 100,
+            prob_bi = round(probability_prize_bsr(player.high, player.bi) * 100, 2),
             prob_bj = prob_bj
         )
 

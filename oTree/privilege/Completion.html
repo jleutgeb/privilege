@@ -12,7 +12,7 @@
     {{ endif }}
 
 {{ else }}
-<p>Your group is paid for beliefs.</p>
+<p>Your group is paid for beliefs. You earn {{ group.completion_payoff }} for completing this study and an additional {{ group.beliefs_payoff }} for every prize you win. In total you earned {{ player.payoff }}.</p> 
 
 <div style="margin:10px">
 
@@ -25,7 +25,7 @@
     </tr>
     <tr>
         <td>
-            You were a {{ if player.high }}high{{ else }}low{{ endif }} type.
+            You were {{ if not player.high }}not{{ endif }} a high type.
         </td>
 
         <td>
@@ -36,7 +36,7 @@
             {{ prob_bi }}%
         </td>
         <td>
-            {{ if player.obi }}You won XXX.
+            {{ if player.obi }}You won {{ group.beliefs_payoff }}.
             {{ else }} You did not win.
             {{ endif }}
         </td>
@@ -44,7 +44,7 @@
 
     <tr>
         <td>
-            Your partner was a {{ if partner_high }}high{{ else }}low{{ endif }} type.
+            Your partner was {{ if partner_high }}not{{ endif }} a high type.
         </td>
 
         <td>
@@ -55,7 +55,7 @@
             {{ prob_bj }}%
         </td>
         <td>
-            {{ if player.obj }}You won XXX.
+            {{ if player.obj }}You won {{ group.beliefs_payoff }}.
             {{ else }} You did not win.
             {{ endif }}
         </td>
