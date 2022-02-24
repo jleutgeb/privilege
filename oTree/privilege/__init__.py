@@ -46,7 +46,7 @@ class Player(BasePlayer):
     kudos = models.BooleanField()  # does the player receive kudos
     q = models.FloatField() # player's actual chance
 
-    leads = models.BooleanField()  # save whether the subject wants to lead
+    leads = models.BooleanField(label="Do you want to lead?")  # save whether the subject wants to lead
     leadership_correct = models.BooleanField()  # is the leader correct (conditional on being the leader)
     made_leadership_choice = models.BooleanField(initial=False) # whether the player made the leadership choice
 
@@ -78,8 +78,29 @@ class Player(BasePlayer):
         label="Gender"
     )
     age = models.IntegerField(min=0, max=100, label="How old are you? (in years)")
-    strategy = models.LongStringField(blank=True,
-                                      label="Please describe your thought process or your strategy in this experiment. (optional)")
+    language = models.StringField(
+        choices=['English', 'Other'],
+        label='What is your first language?'
+    )
+    residence = models.StringField(
+        choices=['UK', 'Other'],
+        label='What is your country of residence?'
+    )
+    nationality = models.StringField(
+        choices=['UK', 'Other'],
+        label='What is your nationality?'
+    )
+    student = models.StringField(
+        choices=['Yes', 'No'],
+        label='Are you a student?'
+    )
+    employment = models.StringField(
+        choices=['Yes', 'No'],
+        label='Are you currently employed?'
+    )
+    zip = models.StringField(
+        label='Please enter your 5-digit ZIP code'
+    )
     comments = models.LongStringField(blank=True,
                                       label="Do you have any other comments or questions about this study? (optional)")
 
@@ -284,7 +305,7 @@ class Leadership(Page):
 
 class Survey(Page):
     form_model = "player"
-    form_fields = ['gender', 'age', 'strategy', 'comments']
+    form_fields = ['gender', 'age', 'language', 'residence', 'nationality', 'student', 'employment', 'zip', 'comments']
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.payoff += player.group.completion_payoff
