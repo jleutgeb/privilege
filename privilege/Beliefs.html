@@ -6,8 +6,6 @@
 {{ formfield_errors 'bi' }}
 {{ formfield_errors 'bj' }}
 
-<div style="margin-right:10px; margin-top:10px">
-
 <p>
     You receive {{ if player.kudos }}{{ else }}no{{ endif }} kudos.
 </p>
@@ -16,9 +14,12 @@
     Your partner receives {{ if partner_kudos }}{{ else }}no{{ endif }} kudos.
 </p>
 
-<p>Please evaluate how likely the following statements are. To maximize the probability of earning the prize you should simply guess how likely each statement is true on average.</p>
-
-</div>
+<p>
+    Please evaluate how likely the following statements are true. At the end of the experiment we will evaluate for each statement whether it is true and for each statement you may win a prize of {{ group.beliefs_payoff }}. The exact probability of winning a prize depends on your guess and whether the statement turns out to be true. If the statement is true, your probability of winning the prize is equal to 1 - (1 - guess)². If the statement is false, your probability of winning the prize is equal to 1 - guess².
+</p>
+<p>
+    To maximize the probability of earning the prize you should state your best guess how likely the statements are true. 
+</p>
 
 <div style="margin:10px">
 
