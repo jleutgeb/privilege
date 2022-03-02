@@ -53,6 +53,7 @@ class Player(BasePlayer):
     # beliefs about own and partner's types 
     bi = models.FloatField(min=0, max=1)
     bj = models.FloatField(min=0, max=1)
+    bi_first = models.BooleanField() # if true bi is first in the table, else bj is first
 
     obi = models.BooleanField()  # does the player receive prize for beliefs about self
     obj = models.BooleanField()  # does the player receive prize for beliefs about partner
@@ -172,6 +173,7 @@ class Matching(WaitPage):
             group.qL = group.session.config['qL_low']
 
         for p in group.get_players():
+            p.bi_first = random.random() < 0.5
             p.privilege = p.participant.privilege
             if p.privilege:
                 p.high = random.random() < p.group.phiP
@@ -226,6 +228,12 @@ class Beliefs(Page):
             partner_kudos = player.kudos_cp
         return dict(
             partner_kudos = partner_kudos
+        )
+
+    @staticmethod
+    def js_vars(player: Player):
+        return dict(
+            bi_first = player.bi_first
         )
 
     @staticmethod

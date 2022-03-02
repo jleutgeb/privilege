@@ -24,7 +24,7 @@
 <div style="margin:10px">
 
     <table id="beliefs-choices" class="table">
-    <tr style="border-top:2px solid black">
+    <tr>
         <td></td>
         <td></td>
         <td colspan="2" style="border-bottom:1px solid black">Your chance of winning {{ group.beliefs_payoff }} </td>
@@ -62,7 +62,7 @@
         </td>
     </tr>
 
-    <tr style="border-bottom:2px solid black">
+    <tr>
         <td style="width: 450px">
             <label for="bj_ability">My partner is a high type.</label>
             <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
@@ -97,6 +97,14 @@
 
 {{ block scripts }}
 <script>
+    function insertbj() {
+        let table = document.getElementById("beliefs-choices");
+        let rows = table.querySelectorAll("tr");
+        var bi = rows[2];
+        var bj = rows[3];
+        bi.parentNode.insertBefore(bj.parentNode.removeChild(bj), bi);
+    }
+
     const sliders = document.querySelectorAll('.slider')
     const next_button = document.getElementById("next_button")
 
@@ -107,6 +115,9 @@
             sliders[i].addEventListener('input', slider_click);
             sliders[i].addEventListener('change', slider_click);
             sliders[i].clicked = 0;
+        }
+        if (js_vars.bi_first) {} else {
+            insertbj()
         }
     }
 
