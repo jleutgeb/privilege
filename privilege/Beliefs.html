@@ -69,12 +69,16 @@
     </tr>
     
     <tr style="border-bottom:1px solid black">
+        <td>Statement</td>
         <td>Your guess</td>
         <td>if the statement is true</td>
         <td>if the statement is not true</td>
     </tr>
     
     <tr>
+        <td>
+            You {{ if player.kudos }}★{{ else }}☆{{ endif }} are a good player.
+        </td>
         <td>
             <span id="bi_guess">--</span>
         </td>
@@ -89,6 +93,9 @@
     </tr>
 
     <tr>
+        <td>
+            Your partner {{ if partner_kudos }}★{{ else }}☆{{ endif }} is a good player.
+        </td>
         <td>
             <span id="bj_guess">--</span>
         </td>
