@@ -1,5 +1,5 @@
 {{ block title }}
-    Information
+    Evaluation
 {{ endblock }}
 {{ block content }}
 
@@ -7,18 +7,28 @@
 {{ formfield_errors 'bj' }}
 
 <p>
-    You receive {{ if player.kudos }}{{ else }}no{{ endif }} kudos.
+    You are Type A and received {{ if player.kudos }}★{{ else }}☆{{ endif }}.
 </p>
 
 <p>
-    Your partner receives {{ if partner_kudos }}{{ else }}no{{ endif }} kudos.
+    Your partner is Type B and received {{ if partner_kudos }}★{{ else }}☆{{ endif }}.
+    {{ if player.no_partner }}Your partner is a computer player.{{ endif }}
 </p>
 
 <p>
-    Please evaluate how likely the following statements are true. At the end of the experiment we will evaluate for each statement whether it is true and for each statement you may win a prize of {{ group.beliefs_payoff }}. The exact probability of winning a prize depends on your guess and whether the statement turns out to be true. If the statement is true, your probability of winning the prize is equal to 1 - (1 - guess)². If the statement is false, your probability of winning the prize is equal to 1 - guess².
+    Please evaluate how likely the following statements are true. 
+    At the end of the experiment we will evaluate for each statement whether it is true and for each statement you may win a prize of {{ group.beliefs_payoff }}. 
+    The exact probability of winning a prize depends on your guess and whether the statement turns out to be true. 
+    If the statement is true, your probability of winning the prize is equal to (1 - (1 - guess)²) * 100%. 
+    If the statement is false, your probability of winning the prize is equal to (1 - guess²) * 100%.
 </p>
+
 <p>
     To maximize the probability of earning the prize you should state your best guess how likely the statements are true. 
+    Click the slider below the statement to enter your best guess.
+    The interface will automatically calculate your chances of winning the prize.
+    Move the slider until you feel comfortable with your choice. 
+    After you clicked both sliders, the button to continue the experiment will appear. 
 </p>
 
 <div style="margin:10px">
@@ -41,7 +51,7 @@
 
     <tr>
         <td style="width: 450px">
-            <label for="bi">I am a high type.</label>
+            <label for="bi">You {{ if player.kudos }}★{{ else }}☆{{ endif }} are a good player.</label>
             <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
                 <span class="input-group-text">0%</span>
                 <input type="range" name="bi" id="bi" min="0" max="1" step="0.01" class="slider">
@@ -64,7 +74,7 @@
 
     <tr>
         <td style="width: 450px">
-            <label for="bj_ability">My partner is a high type.</label>
+            <label for="bj_ability">Your partner {{ if partner_kudos }}★{{ else }}☆{{ endif }} is a good player.</label>
             <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
                 <span class="input-group-text">0%</span>
                 <input type="range" name="bj" id="bj" min="0" max="1" step="0.01" class="slider">

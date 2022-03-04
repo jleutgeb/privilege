@@ -3,67 +3,115 @@
 {{ endblock }}
 {{ block content }}
 
-<h4>Welcome</h4>
-
-<h4>Urn Draws</h4>
+<h4>Overview</h4>
 
 <p>
-  In this experiment you will go blind bowling cousin
+  In this study there are two types of players: Type A and Type B. 
+  <b>You are Type A.</b>
 </p>
 
 <p>
-  You will interact with another participant in this experiment. We will refer to this person as your partner.
-</p>
-
-<h4>Decision 1</h4>
-
-<p>
-  You will bowl but not earn any money.
-</p>
-
-<h4>Information and Guesses</h4>
-
-<p>
-  Afterwards, you will receive some information. We will show you kudos. 
+  You will interact with another participant in this study. 
+  We will refer to you the other participant as your partner.
+  You will know your partner's type, and your partner will also know your type.
 </p>
 
 <p>
-  We will summarize all the information that you have received in a table like the one below.
-  If you have not received information, the elements will be colored grey and have a question mark.
-  After you have received information, the elements will be updated with the corresponding color.
+  You and your partner will perform a computerized task. 
+  Think of this task as a game of bowling but with a blindfold. 
+  When you bowl you can either score a strike or miss.
+  Good players are more likely to score a strike than bad players.
+</p>
+<p>
+  You will not know for sure if you or your partner are good players or not, and neither will your partner.
+  <ul>
+    <li>Good players have a chance of {{ qH }}% of scoring a strike. </li>
+    <li>Bad players have a chance of {{ qL }}% of scoring a strike. </li>
+  </ul>
+</p>
+<p>
+  The probability of being a good player is different for Type A and Type B players.
+  <ul>
+    <li>Type A players have a chance of {{ phi_i }}% to be a good player.</li>
+    <li>Type B players have a chance of {{ phi_j }}% to be a good player.</li>
+  </ul>
 </p>
 
 <p>
-  After you have received the information we will ask you to evaluate how likely some statements are.
-  For each statement there is a prize of {{ beliefs_payoff }}
-  The probability of winning the prize depends on your guess and whether the statement is true.
-  To maximize the probability of earning the prize you should simply guess how likely each statement is true on average.
+  When bowling you wear a blindfold so you will not know whether you scored a strike or not. 
+  First both you and your partner will play a trial round. 
+  After the trial round you will receive some information.
+  You and your partner may either receive a black star ★ or a white star ☆ next to your Player ID.
+</p>
+
+<p>
+If a Type A player scores a strike:
+  <ul>
+    <li>{{ pk_i }}% chance of receiving ★</li>
+    <li>{{ pn_i }}% chance of receiving ☆</li>
+  </ul>
+</p>
+
+<p>
+  If a Type B player scores a strike:
+  <ul>
+    <li>{{ pk_j }}% chance of receiving ★</li>
+    <li>{{ pn_j }}% chance of receiving ☆</li>
+  </ul>
+</p>
+<p>
+  If a player does not score a strike he or she will always receive ☆.
+</p>
+
+<p>
+  By observing the stars you can learn how likely it is that you are a good player or your partner is a good player.
+</p>
+
+<h4>Evaluation</h4>
+
+<p>
+  We will then ask you to evaluate how likely it is that you and your partner are good players.
+  For each question you may earn a prize of {{ beliefs_payoff }}.
+  The probability of winning the prize depends on your guess and whether the you and your partner are good players.
   We will show you the exact probabilities when you make the choice.
 </p>
 
-<h4>Decision 2</h4>
+<h4>Game</h4>
 
 <p>
-  You will bowl again and you have to decide whether you want to lead.
-
+  Afterwards, you and your partner will have to make a decision. 
+  One of you has to play for the team.
+  If the player who plays for the team scores a strike, both players may earn a prize of {{ decision_payoff }}.
+  If this player does not score a strike, both players do not earn this prize.
+  Both you and your partner decide whether you want to play for the team.
+  If only one player wants to play, this player is chosen to play for the team.
+  If either both players or none of the players want to play, one player is randomly chosen to play.
 </p>
-
-<p>If you decide not to choose from your own doors:</p>
-<ul>
-    <li>Your partner will choose a door from their doors.</li>
-    <li>If your bowls well, both you and your partner will each receive {{ decision_payoff }}.</li>
-</ul>
 
 <h4>Survey</h4>
 <p>After the experiment there will be a short survey.</p>
 
-<h4>Completion</h4>
-
+<h4>Payments</h4>
 <p>
-  At the end of the experiment you are free to wait or return to Prolific. For completion you will earn {{ completion_payoff }}.
+  For the completion of this study you will earn {{ completion_payoff }}. 
+  Additionally, we will randomly pay your team either for the Evalation or the Game.  
+</p>
+
+<h4>Matching</h4>
+<p>
+  We will match you with a partner after this page. 
+  You may have to wait for a partner to arrive.
+  If a partner does not arrive within {{ max_wait_time }} minutes, a computer player will take over as your partner.
+  The computer player will make decisions in order to maximize its earnings. 
+  We will let you know when a computer player takes over as your partner. 
 </p>
 
 
-    {{ next_button }}
+
+<p>
+
+</p>
+
+{{ next_button }}
 
 {{ endblock }}

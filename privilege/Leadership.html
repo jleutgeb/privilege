@@ -1,15 +1,18 @@
 {{ block title }}
-    Group Decision
+    Game
 {{ endblock }}
 {{ block content }}
 
 
 
 <p>
-    You and your partner have to decide who will take a shot for the group.
-</p>
-
-<p>If only one of you decides to lead, he or she becomes the leader. If both either lead or not lead, we assign leadership 50/50.</p>
+    You {{ if player.kudos }}★{{ else }}☆{{ endif }} and your partner {{ if partner_kudos }}★{{ else }}☆{{ endif }} have to decide who will play for the group.
+    If the player who plays for the team scores a strike, both players may earn a prize of {{ group.decision_payoff }}.
+    If this player does not score a strike, both players do not earn this prize.
+    Both you and your partner decide whether you want to play for the team.
+    If only one player wants to play, this player is chosen to play.
+    If either both players or none of the players want to play, one player is randomly chosen to play.
+  </p>
 
 
     {{ formfields }}

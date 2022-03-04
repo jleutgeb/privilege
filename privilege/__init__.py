@@ -46,7 +46,7 @@ class Player(BasePlayer):
     kudos = models.BooleanField()  # does the player receive kudos
     q = models.FloatField() # player's actual chance
 
-    leads = models.BooleanField(label="Do you want to lead?")  # save whether the subject wants to lead
+    leads = models.BooleanField(label="Do you want to play for the group?", choices=[[True, "Yes"], [False, "No"]])  # save whether the subject wants to lead
     leadership_correct = models.BooleanField()  # is the leader correct (conditional on being the leader)
     made_leadership_choice = models.BooleanField(initial=False) # whether the player made the leadership choice
 
@@ -255,6 +255,17 @@ class Leadership(Page):
     # players say whether they want to lead
     form_model = "player"
     form_fields = ["leads"]
+    
+    @staticmethod
+    def vars_for_template(player: Player):
+        if not player.no_partner:
+            partner_kudos = player.get_others_in_group()[0].kudos
+        else:
+            partner_kudos = player.kudos_cp
+        return dict(
+            partner_kudos = partner_kudos
+        )
+    
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.made_leadership_choice = True
