@@ -31,77 +31,83 @@
     After you clicked both sliders, the button to continue the experiment will appear. 
 </p>
 
-<div style="margin:10px">
+<table id="beliefs-choices" class="table">
+<tr style="border-bottom:1px solid black">
+    <td>Statement</td>
+</tr>
 
-    <table id="beliefs-choices" class="table">
+<tr>
+    <td style="min-width: 400px">
+        <label for="bi">You {{ if player.kudos }}★{{ else }}☆{{ endif }} are a good player.</label>
+        <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
+            <span class="input-group-text">0%</span>
+            <input type="range" name="bi" id="bi" min="0" max="1" step="0.01" class="slider">
+            <span class="input-group-text">100%</span>
+        </div>
+    </td>
+</tr>
+
+<tr>
+    <td style="min-width: 400px">
+        <label for="bj_ability">Your partner {{ if partner_kudos }}★{{ else }}☆{{ endif }} is a good player.</label>
+        <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
+            <span class="input-group-text">0%</span>
+            <input type="range" name="bj" id="bj" min="0" max="1" step="0.01" class="slider">
+            <span class="input-group-text">100%</span>
+        </div>
+    </td>
+
+</tr>
+
+</table>
+
+
+<table class="table">
     <tr>
-        <td></td>
         <td></td>
         <td colspan="2" style="border-bottom:1px solid black">Your chance of winning {{ group.beliefs_payoff }} </td>
     </tr>
-
+    
     <tr style="border-bottom:1px solid black">
-        <td>Statement</td>
         <td>Your guess</td>
         <td>if the statement is true</td>
         <td>if the statement is not true</td>
     </tr>
-
-
-
+    
     <tr>
-        <td style="width: 450px">
-            <label for="bi">You {{ if player.kudos }}★{{ else }}☆{{ endif }} are a good player.</label>
-            <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
-                <span class="input-group-text">0%</span>
-                <input type="range" name="bi" id="bi" min="0" max="1" step="0.01" class="slider">
-                <span class="input-group-text">100%</span>
-            </div>
-        </td>
-
         <td>
-            <span id="bi_guess"></span>
+            <span id="bi_guess">--</span>
         </td>
-
+    
         <td>
-            <span id="bi_typeH"></span>
+            <span id="bi_typeH">--</span>
         </td>
-
+    
         <td>
-            <span id="bi_typeL"></span>
+            <span id="bi_typeL">--</span>
         </td>
     </tr>
 
     <tr>
-        <td style="width: 450px">
-            <label for="bj_ability">Your partner {{ if partner_kudos }}★{{ else }}☆{{ endif }} is a good player.</label>
-            <div class="input-group" style="width: 80%; margin-left: auto; margin-right: auto">
-                <span class="input-group-text">0%</span>
-                <input type="range" name="bj" id="bj" min="0" max="1" step="0.01" class="slider">
-                <span class="input-group-text">100%</span>
-            </div>
-        </td>
-
         <td>
-            <span id="bj_guess"></span>
+            <span id="bj_guess">--</span>
         </td>
-
+    
         <td>
-            <span id="bj_typeH"></span>
+            <span id="bj_typeH">--</span>
         </td>
-
+    
         <td>
-            <span id="bj_typeL"></span>
+            <span id="bj_typeL">--</span>
         </td>
+    
     </tr>
 
 </table>
-</div>
 
-<div>
-    <button id="next_button" class="btn btn-primary btn-large" style="visibility: hidden">Next</button>
-</div>
+<button id="next_button" class="btn btn-primary btn-large" style="visibility: hidden">Next</button>
 
+    
 
 {{ endblock }}
 
