@@ -25,7 +25,7 @@
 
 <p>
     To maximize the probability of earning the prize you should state your best guess how likely the statements are true. 
-    Click the slider below the statement to enter your best guess.
+    Click and move the sliders below to enter your best guess.
     The interface will automatically calculate your chances of winning the prize.
     Move the slider until you feel comfortable with your choice. 
     After you clicked both sliders, the button to continue the experiment will appear. 
@@ -138,7 +138,7 @@
     }
 
     function slider_click() {
-        this.style.setProperty('--SliderWidth', '10px')
+        this.style.setProperty('--SliderWidth', '20px')
         this.clicked = 1
         let num_clicked = 0
         let i
