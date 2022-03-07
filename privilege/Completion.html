@@ -12,8 +12,7 @@
         played for the team and
         {{ if leadership_correct }}scored a strike{{ else }}did not score a strike{{ endif }}. 
         
-        You earn {{ group.completion_payoff }} for completing this study
-        {{ if leadership_correct }} and an additional {{ group.decision_payoff }} because 
+        You earn {{ group.completion_payoff }} for completing this study{{ if leadership_correct }} and an additional {{ group.decision_payoff }} because 
         {{ if group.leader == player.id_in_group }}you{{ else }}your partner{{ endif }} scored a strike{{ endif }}. 
         In total you earned {{ player.payoff }}. 
         You can click the button "Return to Prolific" to return to Prolific. Thank you very much for participating.
@@ -34,7 +33,7 @@
 {{ else }}
 <p>
     Your group is paid for the Guess. 
-    You earn {{ group.completion_payoff }} for completing this study 
+    You earn {{ group.completion_payoff }} for completing this study
     and an additional {{ group.beliefs_payoff }} for every prize you win. 
     In total you earned {{ player.payoff }}.
 </p> 
@@ -50,7 +49,7 @@
         </tr>
         <tr>
             <td>
-                You were {{ if not player.high }}not{{ endif }} a high type.
+                You were a{{ if player.high }}good{{ else }}bad{{ endif }} player.
             </td>
 
             <td>
@@ -69,7 +68,7 @@
 
         <tr>
             <td>
-                Your partner was {{ if partner_high }}not{{ endif }} a high type.
+                Your partner was a {{ if partner_high }}good{{ else }}bad{{ endif }} player.
             </td>
 
             <td>
