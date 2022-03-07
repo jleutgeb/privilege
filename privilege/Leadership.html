@@ -7,6 +7,7 @@
 
 <p>
     You {{ if player.kudos }}★{{ else }}☆{{ endif }} and your partner {{ if partner_kudos }}★{{ else }}☆{{ endif }} have to decide who will play for the group.
+    {{ if player.no_partner }}Your partner is a computer player that maximizes its earnings.{{ endif }}
     If the player who plays for the team scores a strike, both players may earn a prize of {{ group.decision_payoff }}.
     If this player does not score a strike, both players do not earn this prize.
     Both you and your partner decide whether you want to play for the team.
