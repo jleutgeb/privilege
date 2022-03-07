@@ -325,9 +325,6 @@ class Leadership(Page):
 class Survey(Page):
     form_model = "player"
     form_fields = ['gender', 'age', 'language', 'residence', 'nationality', 'student', 'employment', 'zip', 'comments']
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        player.payoff += player.group.completion_payoff
 
 
 class Completion(Page):
