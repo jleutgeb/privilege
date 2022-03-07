@@ -10,7 +10,7 @@
         Your group is paid for the Game. 
         {{ if group.leader == player.id_in_group }}You{{ else }}Your partner{{ endif }}
         played for the team and
-        {{ if leadership_correct }}scored a strike{{ else }}did not score score a strike{{ endif }}. 
+        {{ if leadership_correct }}scored a strike{{ else }}did not score a strike{{ endif }}. 
         
         You earn {{ group.completion_payoff }} for completing this study
         {{ if leadership_correct }} and an additional {{ group.decision_payoff }} because 
