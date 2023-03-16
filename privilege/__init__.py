@@ -24,18 +24,18 @@ class Subsession(BaseSubsession):
 
 class Group(BaseGroup):
     payment_choices = models.BooleanField() # variable if group is paid for leadership or beliefs (to eliminate hedging)
-    completion_payoff = models.CurrencyField()
-    decision_payoff = models.CurrencyField()
-    beliefs_payoff = models.CurrencyField()
+    completion_payoff = models.CurrencyField() # payoff for completing the study
+    decision_payoff = models.CurrencyField()  # payoff for scoring
+    beliefs_payoff = models.CurrencyField() # payoff for beliefs
     made_leadership_choice = models.BooleanField(initial=False) # whether all players in the group made the leadership choice
-    leader = models.IntegerField()
+    leader = models.IntegerField() # player ID of leader in group
     phiP = models.FloatField() # chance that privileged player is high type
     phiU = models.FloatField() # chance that underprivileged player is high type
     qH = models.FloatField() # chance that high type is correct
     qL = models.FloatField() # chance that low type is correct
-    pkP = models.FloatField()
-    pkU = models.FloatField()
-    qL_high = models.BooleanField() # variable for treatment
+    pkP = models.FloatField() # probability of receiving kudos when type P
+    pkU = models.FloatField() # probability of receiving kudos when type U
+    qL_high = models.BooleanField() # treatment variable
 
 
 class Player(BasePlayer):
@@ -48,25 +48,25 @@ class Player(BasePlayer):
 
     leads = models.BooleanField(label="Do you want to play for the group?", choices=[[True, "Yes"], [False, "No"]])  # save whether the subject wants to lead
     leadership_correct = models.BooleanField()  # is the leader correct (conditional on being the leader)
-    made_leadership_choice = models.BooleanField(initial=False) # whether the player made the leadership choice
+    made_leadership_choice = models.BooleanField(initial=False) # whether the player made the leadership choice yet
 
     # beliefs about own and partner's types 
-    bi = models.FloatField(min=0, max=1)
-    bj = models.FloatField(min=0, max=1)
+    bi = models.FloatField(min=0, max=1) # beliefs about being high type 
+    bj = models.FloatField(min=0, max=1) # beliefs about partner being high type
     bi_first = models.BooleanField() # if true bi is first in the table, else bj is first
 
     obi = models.BooleanField()  # does the player receive prize for beliefs about self
     obj = models.BooleanField()  # does the player receive prize for beliefs about partner
 
     # no partner shows up
-    no_partner = models.BooleanField(initial=False)
-    privilege_cp = models.BooleanField()
-    high_cp = models.BooleanField()
-    q_cp = models.FloatField()
-    correct_cp = models.BooleanField()
-    kudos_cp = models.BooleanField()
-    leads_cp = models.BooleanField()
-    leadership_correct_cp = models.BooleanField() 
+    no_partner = models.BooleanField(initial=False) # if no partner shows up, play against coomputer
+    privilege_cp = models.BooleanField() # whether the computer player is type p
+    high_cp = models.BooleanField() # whether the computer player is a high type
+    q_cp = models.FloatField() # computer player's actual chance
+    correct_cp = models.BooleanField() # whether computer player is correct
+    kudos_cp = models.BooleanField() # does the computer player receive kudos
+    leads_cp = models.BooleanField() # does the computer player lead
+    leadership_correct_cp = models.BooleanField()  # is the leader correct (conditional on being the leader)
 
     ## survey
     gender = models.StringField(
@@ -107,14 +107,14 @@ class Player(BasePlayer):
 
 
 # FUNCTIONS
-# function to calculate whether a prize is awarded by the binarized scoring rule
+# function to calculate probability of assigning the price
 def probability_prize_bsr(statement, belief):
     if statement:
         return 1 - (1 - belief) ** 2
     else:
         return 1 - belief ** 2
 
-
+# function to calculate whether a prize is awarded by the binarized scoring rule
 def draw_prize_bsr(statement, belief):
     draw = random.random()
     if draw < probability_prize_bsr(statement, belief):
@@ -122,20 +122,23 @@ def draw_prize_bsr(statement, belief):
     else:
         return False
 
-
+# if a player is waiting too long for a partner, let them continue
 def waiting_too_long(player):
     return time.time() - player.participant.wait_page_arrival > player.session.config['max_wait_time']
 
 
 # PAGES
+# this function specifies that when grouping players, they should come from different waiting bins
 def group_by_arrival_time_method(subsession, waiting_players):
     # print('in group_by_arrival_time_method')
+    # put players into waiting bins by privilege and treatment
     PH_players = [p for p in waiting_players if p.participant.privilege and p.participant.qL_high]
     PL_players = [p for p in waiting_players if p.participant.privilege and not p.participant.qL_high]
     
     UH_players = [p for p in waiting_players if not p.participant.privilege and p.participant.qL_high]
     UL_players = [p for p in waiting_players if not p.participant.privilege and not p.participant.qL_high]
 
+    # if there is a partner available, create a group
     if len(PH_players) >= 1 and len(UH_players) >= 1:
         # print('about to create a qL_high group')
         return [PH_players[0], UH_players[0]]
@@ -143,6 +146,7 @@ def group_by_arrival_time_method(subsession, waiting_players):
         # print('about to create a qL_low group')
         return [PL_players[0], UL_players[0]]
     # print('not enough players yet to create a group')
+    # if a player is waiting too long, let them play against a computer player
     for player in waiting_players:
         if waiting_too_long(player):
             player.no_partner = True
@@ -152,7 +156,8 @@ def group_by_arrival_time_method(subsession, waiting_players):
 class Matching(WaitPage):
     group_by_arrival_time = True
     def after_all_players_arrive(group: Group):
-        group.payment_choices = random.random() < 0.5
+        group.payment_choices = random.random() < 0.5 # randomly draw whether choices are paid (else beliefs)
+        # gather group variables from the config/players
         group.completion_payoff = group.session.config['completion_payoff']
         group.decision_payoff = group.session.config['decision_payoff']
         group.beliefs_payoff = group.session.config['beliefs_payoff']
@@ -173,7 +178,8 @@ class Matching(WaitPage):
             group.qL = group.session.config['qL_low']
 
         for p in group.get_players():
-            p.bi_first = random.random() < 0.5
+            p.bi_first = random.random() < 0.5 # randomize order in which beliefs are elicited
+            # assign high/low types and their chance
             p.privilege = p.participant.privilege
             if p.privilege:
                 p.high = random.random() < p.group.phiP
@@ -183,8 +189,9 @@ class Matching(WaitPage):
                 p.q = p.group.qH
             else:
                 p.q = p.group.qL
-            p.correct = random.random() < p.q
-            p.leadership_correct = random.random() < p.q
+            p.correct = random.random() < p.q # draw whether the player is correct
+            p.leadership_correct = random.random() < p.q # draw whether the player would be correct if they become the leader (unkown to players at this point)
+            # assign kudos
             if p.correct and p.privilege and random.random() < p.group.pkP:
                 p.kudos = True
             elif p.correct and not p.privilege and random.random() < p.group.pkU:
@@ -192,6 +199,7 @@ class Matching(WaitPage):
             else:
                 p.kudos = False
 
+            # same but when partner is a computer player
             if p.no_partner:
                 p.privilege_cp = not p.privilege
                 if p.privilege_cp:
@@ -212,6 +220,7 @@ class Matching(WaitPage):
                     p.kudos_cp = False
 
 
+# this page is just here so subjects can click a button
 class Decision(Page):
     pass
 
@@ -244,6 +253,7 @@ class Beliefs(Page):
         else:
             partner_high = player.high_cp
         player.obj = draw_prize_bsr(partner_high, player.bj)
+        # if choices are not paid, subjects receive payoffs for the accuracy of their beliefs
         if not player.group.payment_choices:
             if player.obi:
                 player.payoff += player.group.beliefs_payoff
@@ -271,6 +281,7 @@ class Leadership(Page):
         player.made_leadership_choice = True
         group = player.group
         players = group.get_players()
+        # only execute the code to assign payoffs if both players in the group made the decision whether to lead
         if not player.no_partner and player.get_others_in_group()[0].made_leadership_choice:
             group.made_leadership_choice = True
             p1 = group.get_player_by_id(1)
@@ -282,9 +293,12 @@ class Leadership(Page):
             else:
                 player.group.leader = random.randint(1,2)
             leader = group.get_player_by_id(player.group.leader)
+            # if the leader is correct and choices are paid, both receive the payoff
             if player.group.payment_choices and leader.leadership_correct:
                 for p in players:
                     p.payoff += player.group.decision_payoff
+                    
+        # if there is no partner, the computer partner must make a choice whether to lead. use simple bayesian updating.
         elif player.no_partner:
             group.made_leadership_choice = True
             # calculate prob of being high type from the perspective of computer player
