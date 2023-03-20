@@ -7,7 +7,7 @@
 {{ formfield_errors 'bj' }}
 
 <p>
-    You are Type A and received {{ if player.kudos }}★{{ else }}●{{ endif }}.
+    {{ if player.kudos }}Congratulations!{{ endif }}. You are Type A and received {{ if player.kudos }}★{{ else }}●{{ endif }}.
 </p>
 
 <p>
