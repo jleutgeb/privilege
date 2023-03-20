@@ -100,7 +100,7 @@ class Player(BasePlayer):
         label='Are you currently employed?'
     )
     zip = models.StringField(
-        label='Please enter your 5-digit ZIP code'
+        label='Please enter the first two letters of your postcode'
     )
     comments = models.LongStringField(blank=True,
                                       label="Do you have any other comments or questions about this study? (optional)")
