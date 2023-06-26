@@ -1,0 +1,96 @@
+{{ block title }}
+    Instructions
+{{ endblock }}
+{{ block content }}
+
+<h4>Overview</h4>
+
+<p>
+  In this study you will play with another participant. 
+  All participants can be of either Type A or Type B. 
+  <b>You are Type A</b> and your partner is type B.
+</p>
+
+<p>
+  One of you is better at bowling but you do not know who. 
+  The better player has a {{ qH }}% chance of scoring a strike, while the other player has only a {{ qL }}% chance of scoring a strike. 
+  The probability of being the better player is different for Type A and Type B players.
+  Type A players have a {{ phi_i }}% chance of being the better player, so type B players have a {{ phi_j }}% chance of being the better player.
+</p>
+
+<p>
+  When bowling you wear a blindfold so you will not know whether you scored a strike or not. 
+  First both you and your partner will play a trial round. 
+  After the trial round you will receive some information whether you and your partner scored. 
+</p>
+
+<p>
+If a Type A player scores a strike:
+  <ul>
+    <li>{{ pk_i }}% chance of receiving ★</li>
+    <li>{{ pn_i }}% chance of receiving ●</li>
+  </ul>
+</p>
+
+<p>
+  If a Type B player scores a strike:
+  <ul>
+    <li>{{ pk_j }}% chance of receiving ★</li>
+    <li>{{ pn_j }}% chance of receiving ●</li>
+  </ul>
+</p>
+<p>
+  If a player does not score a strike he or she will always receive ●.
+</p>
+
+<p>
+  By observing the stars and circles you can learn how likely it is that you are a good player or your partner is a good player.
+</p>
+
+<h4>Guess</h4>
+
+<p>
+  We will then ask you to guess how likely it is that you and your partner are good players.
+  For each question you may earn a prize of {{ beliefs_payoff }} as an additional bonus payment.
+  The probability of winning the prize depends on your guess and whether the you and your partner are good players.
+  We will show you the exact probabilities when you make the choice.
+</p>
+
+<h4>Game</h4>
+
+<p>
+  Afterwards, you and your partner will have to make a decision. 
+  One of you has to play for the team.
+  If the player who plays for the team scores a strike, both players may earn a prize of {{ decision_payoff }} as an additional bonus payment.
+  If this player does not score a strike, both players do not earn this prize.
+  Both you and your partner decide whether you want to play for the team.
+  If only one player wants to play, this player is chosen to play for the team.
+  If either both players or none of the players want to play, one player is randomly chosen to play.
+</p>
+
+<h4>Survey</h4>
+<p>After the experiment there will be a short survey.</p>
+
+<h4>Payments</h4>
+<p>
+  For the completion of this study you will earn {{ completion_payoff }}. 
+  Additionally, we will randomly pay your team either for the Guess or the Game.  
+</p>
+
+<h4>Matching</h4>
+<p>
+  We will match you with a partner after this page. 
+  You may have to wait for a partner to arrive.
+  If a partner does not arrive within {{ max_wait_time }} minutes, a computer player will take over as your partner.
+  The computer player will make decisions in order to maximize its earnings. 
+  We will let you know when a computer player takes over as your partner. 
+</p>
+
+<p>
+  If your partner drops out during the game we will replace him or her with a computer player.
+  Note that this happens very rarely.
+</p>
+
+{{ next_button }}
+
+{{ endblock }}
