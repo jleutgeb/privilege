@@ -21,46 +21,56 @@
 <p>
   When bowling you wear a blindfold so you will not know whether you scored a strike or not. 
   First both you and your partner will play a trial round. 
-  After the trial round you will receive some information whether you and your partner scored. 
+  After the trial round you will receive a message. 
 </p>
 
 <p>
-If a Type A player scores a strike:
+  There are two possible messages. You can either get positive feedback, or no feedback. 
   <ul>
-    <li>{{ pk_i }}% chance of receiving ★</li>
-    <li>{{ pn_i }}% chance of receiving ●</li>
+    <li>💯 🤩 You/Your partner scored a strike! 🤩</li>
+    <li>No feedback on your/yourpartner's performance</li>
   </ul>
 </p>
 
+{{ if player.privilege }}
+
 <p>
-  If a Type B player scores a strike:
-  <ul>
-    <li>{{ pk_j }}% chance of receiving ★</li>
-    <li>{{ pn_j }}% chance of receiving ●</li>
-  </ul>
-</p>
-<p>
-  If a player does not score a strike he or she will always receive ●.
+  If you score a strike, you have a {{ pk_i }}% chance of receiving positive feedback. Else, you will receive no feedback.
 </p>
 
 <p>
-  By observing the stars and circles you can learn how likely it is that you are a good player or your partner is a good player.
+  If your partner scores a strike, they have a {{ pk_j }}% chance of receiving positive feedback. Else, they will receive no feedback.
+</p>
+
+{{ else }}
+
+<p>
+  If you score a strike, you have a {{ pk_j }}% chance of receiving positive feedback. Else, you will receive no feedback.
+</p>
+
+<p>
+  If your partner scores a strike, they have a {{ pk_i }}% chance of receiving positive feedback. Else, they will receive no feedback.
+</p>
+
+{{ endif }}
+
+<p>
+  By observing the feedback you can learn who is the more likely to be the better player.
 </p>
 
 <h4>Guess</h4>
 
 <p>
-  We will then ask you to guess how likely it is that you and your partner are good players.
-  For each question you may earn a prize of {{ beliefs_payoff }} as an additional bonus payment.
-  The probability of winning the prize depends on your guess and whether the you and your partner are good players.
-  We will show you the exact probabilities when you make the choice.
+  We will then ask you to guess how likely it is that you are the better player.
+  You may earn a prize of {{ beliefs_payoff }} as an additional bonus payment.
+  To maximize the probability of earning the bonus payment, you should state your best guess.
 </p>
 
 <h4>Game</h4>
 
 <p>
   Afterwards, you and your partner will have to make a decision. 
-  One of you has to play for the team.
+  One of you has to play for the entire team.
   If the player who plays for the team scores a strike, both players may earn a prize of {{ decision_payoff }} as an additional bonus payment.
   If this player does not score a strike, both players do not earn this prize.
   Both you and your partner decide whether you want to play for the team.
@@ -74,7 +84,7 @@ If a Type A player scores a strike:
 <h4>Payments</h4>
 <p>
   For the completion of this study you will earn {{ completion_payoff }}. 
-  Additionally, we will randomly pay your team either for the Guess or the Game.  
+  Additionally, we will randomly pay you and your partner either for the Guess or the Game.  
 </p>
 
 <h4>Matching</h4>
