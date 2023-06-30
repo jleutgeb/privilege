@@ -107,6 +107,22 @@ class Player(BasePlayer):
 
 
 # FUNCTIONS
+
+def creating_session(subsession):
+    players = subsession.get_players()
+    i = 0
+    for p in players:
+        p.privilege = i % 2 == 0
+        p.participant.privilege = p.privilege
+        if subsession.session.config['treatment'] == 'qL_high':
+            p.qL_high = True
+        elif subsession.session.config['treatment'] == 'qL_low':
+            p.qL_high = False
+        elif subsession.session.config['treatment'] == 'both':
+            p.qL_high = math.ceil((i+1)/2) % 2 == 0
+        p.participant.qL_high = p.qL_high
+        i += 1
+
 # function to calculate probability of assigning the price
 def probability_prize_bsr(statement, belief):
     if statement:
